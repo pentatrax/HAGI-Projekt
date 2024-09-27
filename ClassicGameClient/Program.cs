@@ -36,7 +36,7 @@ namespace ClassicGameClient
                 }
             }
         }
-        enum GameState : byte
+        private enum GameState : byte
         {
             MainMenu = 0,
             Chess = 1,
@@ -45,7 +45,7 @@ namespace ClassicGameClient
             Mastermind = 4,
             MineSweaper = 5,
         }
-        enum ChessPieces : byte
+        private enum ChessPieces : byte
         {
             None = 0,
             WhiteKing = 1,
@@ -61,25 +61,25 @@ namespace ClassicGameClient
             BlackHorse = 11,
             BlackRook = 12,
         }
-        static void Log(Object input)
+        private static void Log(Object input)
         {
             Console.Write(input);
         }
-        static void Log(Object input, ConsoleColor color)
+        private static void Log(Object input, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.Write(input);
             Console.ForegroundColor = ConsoleColor.White;
         }
-        static void Color(ConsoleColor c)
+        private static void Color(ConsoleColor c)
         {
             Console.ForegroundColor = c;
         }
-        static void BackColor(ConsoleColor c)
+        private static void BackColor(ConsoleColor c)
         {
             Console.BackgroundColor = c;
         }
-        static byte[] InstructionToCordinates(string instruction, out string error)
+        private static byte[] InstructionToCordinates(string instruction, out string error)
         {
             byte[] cords = { 50, 50 };
             string[] boardCords = {
@@ -102,7 +102,7 @@ namespace ClassicGameClient
 
             return cords;
         }
-        static byte[,] TryMovePiece(byte[,] board, string instructions, out string error)
+        private static byte[,] TryMovePiece(byte[,] board, string instructions, out string error)
         {
             Regex inputCheckPattern = new Regex("^([A-H][1-8]-[A-H][1-8])+");
             bool errorHappened = false;
@@ -131,7 +131,7 @@ namespace ClassicGameClient
 
             return (!errorHappened) ? temp : board;
         }
-        static void MainMenu(out GameState gameState, out bool appRunning)
+        private static void MainMenu(out GameState gameState, out bool appRunning)
         {
             appRunning = true;
             gameState = GameState.MainMenu;
@@ -139,7 +139,7 @@ namespace ClassicGameClient
             Console.ReadKey();
 
         }
-        static void Chess(out GameState gameState)
+        private static void Chess(out GameState gameState)
         {
             ChessPieces GetChessPiece(string setup, int index, bool isPlayerChessPieces)
             {
