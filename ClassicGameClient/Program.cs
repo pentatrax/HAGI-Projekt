@@ -130,7 +130,7 @@ namespace ClassicGameClient
             }
             return board;
         }
-        static void DrawBoard(byte[,] board)
+        static void DrawChessBoard(byte[,] board)
         {
             int boardDepth = board.Length / board.GetLength(0);
             Pieces character = Pieces.None;
@@ -293,7 +293,7 @@ namespace ClassicGameClient
                 while (inGame)
                 {
                     Console.Clear();
-                    DrawBoard(board);
+                    DrawChessBoard(board);
                     if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
                     Log("You can write Restart or Quit to do each respectively.\n", ConsoleColor.Yellow);
                     Log("What's your move [A2-B3]?: ", ConsoleColor.Yellow);
@@ -334,7 +334,7 @@ namespace ClassicGameClient
                         MainMenu(out appState, out appRunning);
                         break;
                     case GameState.Chess:
-                        Chess();
+                        Chess(out appState);
                         break;
                 }
             }
