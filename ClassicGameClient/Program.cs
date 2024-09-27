@@ -79,6 +79,12 @@ namespace ClassicGameClient
         {
             Console.BackgroundColor = c;
         }
+        /// <summary>
+        /// Translates [a1] coordinates to array coordinates.
+        /// </summary>
+        /// <param name="instruction">Takes any string using the format [a2].</param>
+        /// <param name="error">Writes error if instruction doesnt fit coordinates format.</param>
+        /// <returns></returns>
         private static byte[] InstructionToCordinates(string instruction, out string error)
         {
             byte[] cords = { 50, 50 };
@@ -102,45 +108,96 @@ namespace ClassicGameClient
 
             return cords;
         }
-        private static byte[,] TryMovePiece(byte[,] board, string instructions, out string error)
-        {
-            Regex inputCheckPattern = new Regex("^([A-H][1-8]-[A-H][1-8])+");
-            bool errorHappened = false;
-            byte[,] temp = board;
-            error = "";
-            string[] arr_instructions = instructions.ToUpper().Split('-');
-            if (inputCheckPattern.IsMatch(instructions.ToUpper()) && instructions.Length <= 5)
-            {
-                byte[] from = InstructionToCordinates(arr_instructions[0], out error);
-                byte[] to = InstructionToCordinates(arr_instructions[1], out error);
-
-                byte moovingPiece = board[from[1], from[0]];
-                byte fieldToMove = board[to[1], to[0]];
-
-                temp[to[1], to[0]] = moovingPiece;
-                temp[from[1], from[0]] = 0;
-            }
-            else
-            {
-                error = "Input did not match instruction example!";
-            }
-            if (error != "")
-            {
-                errorHappened = true;
-            }
-
-            return (!errorHappened) ? temp : board;
-        }
         private static void MainMenu(out GameState gameState, out bool appRunning)
         {
             appRunning = true;
             gameState = GameState.MainMenu;
             Log("Hi friens ^^.");
             Console.ReadKey();
-
+            gameState = GameState.Chess;
         }
+        /// <summary>
+        /// Contains the entire Chess game loop.
+        /// </summary>
+        /// <param name="gameState">Writes to gameState to go back to menu.</param>
         private static void Chess(out GameState gameState)
         {
+            bool IsValidChessMove(byte[,] board, byte[] to, byte[] from, ChessPieces chessPiece)
+            {
+                bool isValidMove = false;
+
+
+
+                return isValidMove;
+            }
+            /// <summary>
+            /// Checks to see if the players move is valid and returns an updated board with the new version. 
+            /// </summary>
+            /// <param name="board">Takes current version of the board.</param>
+            /// <param name="instructions">Takes instructions and throws an error if instructions arent formatted correctly.</param>
+            /// <param name="playerTurn">Boolean to check if the turn is the first or second players.</param>
+            /// <param name="error">Writes any error message to this parameter.</param>
+            /// <returns></returns>
+            byte[,] TryMovePiece(byte[,] board, string instructions, bool isPlayerTurn, out string error)
+            {
+                Regex inputCheckPattern = new Regex("^([A-H][1-8]-[A-H][1-8])+");
+                string player = (isPlayerTurn) ? "White" : "Black";
+                bool errorHappened = false;
+                byte[,] temp = board;
+                error = "";
+                string[] arr_instructions = instructions.ToUpper().Split('-');
+                if (inputCheckPattern.IsMatch(instructions.ToUpper()) && instructions.Length <= 5)
+                {
+                    byte[] from = InstructionToCordinates(arr_instructions[0], out error);
+                    byte[] to = InstructionToCordinates(arr_instructions[1], out error);
+                    byte moovingPiece = board[from[1], from[0]];
+                    byte fieldToMove = board[to[1], to[0]];
+
+                    switch (isPlayerTurn)
+                    {
+                        case true:
+                            if (!(fieldToMove > 0 && fieldToMove <= 6))
+                            {
+                                temp[to[1], to[0]] = moovingPiece;
+                                temp[from[1], from[0]] = 0;
+                            }
+                            else
+                            {
+                                error = $"{player} can't capture their own pieces!";
+                            }
+                            if (!IsValidChessMove(temp, to, from, (ChessPieces)moovingPiece))
+                            {
+                                error = "That isn't a valid move!";
+                            }
+                            break;
+                        case false:
+                            if (!(fieldToMove > 0 && fieldToMove >= 7))
+                            {
+                                temp[to[1], to[0]] = moovingPiece;
+                                temp[from[1], from[0]] = 0;
+                            }
+                            else
+                            {
+                                error = $"{player} can't capture their own pieces!";
+                            }
+                            if (!IsValidChessMove(temp, to, from, (ChessPieces)moovingPiece))
+                            {
+                                error = "That isn't a valid move!";
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    error = "Input did not match instruction example!";
+                }
+                if (error != "")
+                {
+                    errorHappened = true;
+                }
+
+                return (!errorHappened) ? temp : board;
+            }
             ChessPieces GetChessPiece(string setup, int index, bool isPlayerChessPieces)
             {
                 ChessPieces value = ChessPieces.None;
@@ -288,39 +345,53 @@ namespace ClassicGameClient
             string errorMsg = "";
             int boardSize = 8;
             byte[,] gameBoard = new byte[boardSize, boardSize];
-            bool inGame = false;
+            bool inGame = true;
+            bool playerTurn = true;
             string playerInput = "";
-                while (inGame)
+            gameBoard = PopulateBoard(gameBoard);
+            while (inGame)
+            {
+                Console.Clear();
+                DrawChessBoard(gameBoard);
+                if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
+                Log("You can write Restart or Quit to do each respectively.\n", ConsoleColor.Yellow);
+                Log("It's ", ConsoleColor.Yellow);
+                if (playerTurn)
                 {
-                    Console.Clear();
-                    DrawChessBoard(gameBoard);
-                    if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
-                    Log("You can write Restart or Quit to do each respectively.\n", ConsoleColor.Yellow);
-                    Log("What's your move [A2-B3]?: ", ConsoleColor.Yellow);
-                    playerInput = Console.ReadLine();
-                    if (playerInput != "")
+                    Log("Whites ", ConsoleColor.White);
+                }
+                else
+                {
+                    Log("Blacks ", ConsoleColor.Gray);
+                }
+                Log("turn.\n", ConsoleColor.Yellow);
+                Log("What's your move [A2-B3]?: ", ConsoleColor.Yellow);
+                playerInput = Console.ReadLine();
+                if (playerInput != "")
+                {
+                    switch (playerInput.ToLower())
                     {
-                        switch (playerInput.ToLower())
-                        {
-                            case "restart":
-                                errorMsg = "";
-                                gameBoard = PopulateBoard(gameBoard);
-                                break;
-                            case "quit":
-                                errorMsg = "";
-                                inGame = false;
-                                break;
-                            default:
-                                gameBoard = TryMovePiece(gameBoard, playerInput, out errorMsg);
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        errorMsg = "You need to input an instruction!";
+                        case "restart":
+                            errorMsg = "";
+                            gameBoard = PopulateBoard(gameBoard);
+                            break;
+                        case "quit":
+                            errorMsg = "";
+                            inGame = false;
+                            gameState = GameState.MainMenu;
+                            break;
+                        default:
+                            gameBoard = TryMovePiece(gameBoard, playerInput, playerTurn, out errorMsg);
+                            playerTurn = (errorMsg != "") ? !playerTurn : playerTurn;
+                            break;
                     }
                 }
+                else
+                {
+                    errorMsg = "You need to input an instruction!";
+                }
             }
+        }
         private static void Mastermind(out GameState appState)
         {
             throw new NotImplementedException();
