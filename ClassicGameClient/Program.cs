@@ -12,8 +12,9 @@ namespace ClassicGameClient
         
         static void Main(string[] args)
         {
+            #region Initiator
             bool appRunning = true;
-            GameState appState = GameState.MainMenu;
+            GameState appState = GameState.Jeopardy;
             while (appRunning)
             {
                 switch (appState)
@@ -35,7 +36,9 @@ namespace ClassicGameClient
                         break;
                 }
             }
+            #endregion
         }
+        #region Chess Data
         private enum GameState : byte
         {
             MainMenu = 0,
@@ -131,6 +134,8 @@ namespace ClassicGameClient
 
             return (!errorHappened) ? temp : board;
         }
+        #endregion
+        #region MainMenu
         private static void MainMenu(out GameState gameState, out bool appRunning)
         {
             appRunning = true;
@@ -139,6 +144,8 @@ namespace ClassicGameClient
             Console.ReadKey();
 
         }
+        #endregion
+        #region Chess
         private static void Chess(out GameState gameState)
         {
             ChessPieces GetChessPiece(string setup, int index, bool isPlayerChessPieces)
@@ -321,19 +328,101 @@ namespace ClassicGameClient
                     }
                 }
             }
+        #endregion
+        #region Mastermind
         private static void Mastermind(out GameState appState)
         {
             throw new NotImplementedException();
         }
+        #endregion
 
         private static void Jeopardy(out GameState appState)
         {
-            throw new NotImplementedException();
-        }
+            //Quiz arrays
 
+            //Start game
+            appState = GameState.Jeopardy;
+            Console.WriteLine("How many players/teams are playing?");
+            int playerCount = PlayerCount();
+            Console.WriteLine("What are your names?");
+            string[] playerNames = { };
+            Array.Resize<string>(ref playerNames, playerCount);
+            PlayerNames();
+
+            //Quiz board setup
+
+
+            //Game end conditions
+            Console.WriteLine("APPLICATION END: PRESS ANY KEY");
+            Console.ReadKey();
+            Environment.Exit(0);
+            #region PlayerCount
+            int PlayerCount()
+            {
+                int value2;
+                while (true)
+                {
+                    string value1 = Console.ReadLine();
+                    if (int.TryParse(value1, out value2))
+                    {
+                        // Input was a valid integer
+                        return value2;
+                    }
+                    else
+                    {
+                        // Input was not a valid integer 
+                        Console.WriteLine("Error: Input is not valid a number. Please try again.", true);
+                    }
+                }
+            }
+            #endregion
+
+            #region PlayerNames
+            void PlayerNames()
+            {
+                for (int i = 0; i < playerNames.Length; i++)
+                {
+                    Console.WriteLine($"Player {i + 1}:");
+                    playerNames[i] = (Console.ReadLine());
+                }
+                Console.WriteLine();
+                Console.Write("All players: ");
+                for (int i = 0; i < playerNames.Length; i++)
+                {
+                    Console.Write($"{playerNames[i]} ");
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Confirm players? Type yes/no to confirm or redo player names.");
+                string redoAnswer = Console.ReadLine();
+                while ((redoAnswer != "yes") && (redoAnswer != "no"))
+                {
+                    Console.WriteLine("Invalid input.");
+                    redoAnswer = Console.ReadLine();
+                }
+                if (redoAnswer == "no")
+                {
+                    PlayerNames();
+                }
+                else
+                {
+                    Console.WriteLine("Great, lets play! Press any key to continue.");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+            #endregion
+        }
+        #region Battleship
         private static void SinkAShip(out GameState appState)
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }
+
+
+//Editing changes: Added regions outside of Jeopardy function for easier reading.
+//Editing changes: Set game-state to always be jeopardy for easier testing.
+//Editing changes: Added jeopardy game function
