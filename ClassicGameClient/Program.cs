@@ -116,16 +116,18 @@ namespace ClassicGameClient
                 else if (playerField[x, y] == (int)BattleshipLogistics.None)
                 {
                     Color(ConsoleColor.Blue);
-                    Console.WriteLine("Splash! Enemy hit water!");
+                    Console.WriteLine($"Splash! Enemy hit water at {x},{y}!");
                     playerField[x, y] = 6;
                     shotChecked = true;
+                    Console.ResetColor();
                 }
                 else
                 {
                     Color(ConsoleColor.Red);
-                    Console.WriteLine("BOOM! Enenmy has hit a ship!");
+                    Console.WriteLine($"BOOM! Enenmy has hit a/an {Enum.GetName(typeof(BattleshipLogistics), playerField[x,y])} at {x},{y}!");
                     playerField[x, y] = 6;
                     shotChecked = true;
+                    Console.ResetColor();
                 }
             }
 
@@ -401,10 +403,51 @@ namespace ClassicGameClient
             int[,] playerField = new int[10, 10];
             int[,] enemyField = new int[10, 10];
             int[,] attackField = new int[10, 10];
+            bool gameEnd = false;
+            GenerateBSEnemyField(enemyField);
+            ConsoleColor userColor = ConsoleColor.Green;
+            Console.Write("Please enter your name?:");
+            string userName = Console.ReadLine().Trim();
             while (true)
             {
-
+                Console.Write("Welcome ");
+                Color(userColor);
+                Console.Write($"{userName}");
+                Console.ResetColor();
+                Console.WriteLine("! Ready to play Battleship?");
+                Console.Write("Please write YES or NO, if you want to play Battleship? ");
+                string answer = Console.ReadLine().Trim().ToUpper();
+                if (answer == "YES")
+                {
+                    Console.WriteLine("Well... Let's start the game!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    break;
+                }
+                else if (answer == "NO")
+                {
+                    appState = GameState.MainMenu;
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine("Returning to Main menu!");
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                    return;
+                }
+                else
+                {
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine("Didn't understand?");
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                }
             }
+            while (gameEnd == false)
+            {
+                
+            }
+            appState = GameState.MainMenu; //I think this is correct....?
         }
         #endregion
     }
