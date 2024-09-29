@@ -61,6 +61,26 @@ namespace ClassicGameClient
             BlackHorse = 11,
             BlackRook = 12,
         }
+        #region BattleshipEnums
+        //Enums for the Battleship Game
+        private enum BattleshipLogistics
+        {
+            None = 0,
+            PatrolBoat = 1,
+            Submarine = 2,
+            Destroyer = 3,
+            Battleship = 4,
+            Carrier = 5,
+            Bombed = 6,
+        }
+        private enum BattleshipDirection
+        {
+            Up = 1,
+            Down = 2,
+            Left = 3,
+            Right = 4
+        }
+        #endregion
         private static void Log(Object input)
         {
             Console.Write(input);
@@ -79,6 +99,50 @@ namespace ClassicGameClient
         {
             Console.BackgroundColor = c;
         }
+        #region BattleshipFunctions
+        //Functions for Battleship Game
+        private static void BSEnemyFire(int[,] playerField)
+        {
+            bool shotChecked = false;
+            Random rnd = new Random();
+            while (shotChecked == false)
+            {
+                int x = rnd.Next(0, 11);
+                int y = rnd.Next(0, 11);
+                if (playerField[x, y] == (int)BattleshipLogistics.Bombed)
+                {
+                    continue;
+                }
+                else if (playerField[x, y] == (int)BattleshipLogistics.None)
+                {
+                    Color(ConsoleColor.Blue);
+                    Console.WriteLine("Splash! Enemy hit water!");
+                    playerField[x, y] = 6;
+                    shotChecked = true;
+                }
+                else
+                {
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine("BOOM! Enenmy has hit a ship!");
+                    playerField[x, y] = 6;
+                    shotChecked = true;
+                }
+            }
+
+        }
+        private static void BSPlayerFire(int[,] enemyField, int[,] attackField)
+        {
+
+        }
+        private static void ShowBSField(int[,] field)
+        {
+
+        }
+        private static void GenerateBSEnemyField(int[,] enemyField)
+        {
+
+        }
+        #endregion
         private static byte[] InstructionToCordinates(string instruction, out string error)
         {
             byte[] cords = { 50, 50 };
@@ -330,10 +394,18 @@ namespace ClassicGameClient
         {
             throw new NotImplementedException();
         }
-
-        private static void SinkAShip(out GameState appState)
+        #region BattleShipGame
+        private static void SinkAShip(out GameState appState) // Made by Lasse Handberg Gohlke
         {
-            throw new NotImplementedException();
+            Console.WriteLine();
+            int[,] playerField = new int[10, 10];
+            int[,] enemyField = new int[10, 10];
+            int[,] attackField = new int[10, 10];
+            while (true)
+            {
+
+            }
         }
+        #endregion
     }
 }
