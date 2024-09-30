@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -65,7 +67,7 @@ namespace ClassicGameClient
         //Enums for the Battleship Game
         private enum BattleshipLogistics
         {
-            None = 0,
+            Water = 0,
             PatrolBoat = 1,
             Submarine = 2,
             Destroyer = 3,
@@ -107,25 +109,28 @@ namespace ClassicGameClient
             Random rnd = new Random();
             while (shotChecked == false)
             {
-                int x = rnd.Next(0, 11);
-                int y = rnd.Next(0, 11);
+                int x = rnd.Next(0, 10);
+                int y = rnd.Next(0, 10);
                 if (playerField[x, y] == (int)BattleshipLogistics.Bombed)
                 {
                     continue;
                 }
-                else if (playerField[x, y] == (int)BattleshipLogistics.None)
+                else if (playerField[x, y] == (int)BattleshipLogistics.Water)
                 {
-                    Color(ConsoleColor.Blue);
-                    Console.WriteLine($"Splash! Enemy hit water at {x},{y}!");
                     playerField[x, y] = 6;
+                    ShowBSField(playerField);
+                    Color(ConsoleColor.Blue);
+                    Console.WriteLine($"Splash! Enemy hit water at {x + 1},{y + 1}!");
                     shotChecked = true;
                     Console.ResetColor();
                 }
                 else
                 {
-                    Color(ConsoleColor.Red);
-                    Console.WriteLine($"BOOM! Enenmy has hit a/an {Enum.GetName(typeof(BattleshipLogistics), playerField[x,y])} at {x},{y}!");
+                    string hitShip = Enum.GetName(typeof(BattleshipLogistics), playerField[x, y]);
                     playerField[x, y] = 6;
+                    ShowBSField(playerField);
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine($"BOOM! Enenmy has hit a/an {hitShip} at {x + 1},{y + 1}!");
                     shotChecked = true;
                     Console.ResetColor();
                 }
@@ -134,13 +139,621 @@ namespace ClassicGameClient
         }
         private static void BSPlayerFire(int[,] enemyField, int[,] attackField)
         {
-
+            bool checkedShot = false;
+            bool intXChecker = false;
+            bool intYChecker = false;
+            int x = 0;
+            int y = 0;
+            while (checkedShot == false)
+            {
+                while (intXChecker == false)
+                {
+                    ShowBSField(attackField);
+                    Console.Write("Where on the x axis, do you wanna hit?: (1 -> 10)");
+                    intXChecker = int.TryParse(Console.ReadLine().Trim(), out x);
+                    if (intXChecker == true && x < 11 && x > 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong number or not a number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        continue;
+                    }
+                }
+                Console.Clear();
+                while (intYChecker == false)
+                {
+                    Console.Write("Where on the Y axis, do you wanna hit? (1 -> 10): ");
+                    intYChecker = int.TryParse(Console.ReadLine().Trim(), out y);
+                    if (intYChecker == true && y < 11 && y > 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("");
+                    }
+                }
+                y -= 1;
+                x -= 1;
+                if (enemyField[x, y] == (int)BattleshipLogistics.Water)
+                {
+                    checkedShot = true;
+                    Color(ConsoleColor.Blue);
+                    Console.WriteLine("SPLASH! You hit the water!");
+                    enemyField[x, y] = 6;
+                    attackField[x, y] = 6;
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                    break;
+                }
+                else if (enemyField[x, y] == (int)BattleshipLogistics.Bombed)
+                {
+                    Console.WriteLine("The place you chose has already been hit... try again!");
+                    intXChecker = false;
+                    intYChecker = false;
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+                else
+                {
+                    checkedShot = true;
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine($"BOOM! You hit a/an {Enum.GetName(typeof(BattleshipLogistics), enemyField[x, y])}!");
+                    enemyField[x, y] = 6;
+                    attackField[x, y] = 6;
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                    break;
+                }
+            }
         }
         private static void ShowBSField(int[,] field)
         {
-
+            for (int x = 0; x < field.GetLength(0); x++)
+            {
+                for (int y = 0; y < field.GetLength(1); y++)
+                {
+                    switch (field[x, y])
+                    {
+                        case 0:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Blue);
+                            Console.Write("    ");
+                            Console.ResetColor();
+                            break;
+                        case 1:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Green);
+                            Console.Write("PPPP");
+                            Console.ResetColor();
+                            break;
+                        case 2:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkYellow);
+                            Console.Write("SSSS");
+                            Console.ResetColor();
+                            break;
+                        case 3:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkMagenta);
+                            Console.Write("DDDD");
+                            Console.ResetColor();
+                            break;
+                        case 4:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGreen);
+                            Console.Write("BBBB");
+                            Console.ResetColor();
+                            break;
+                        case 5:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGray);
+                            Console.Write("CCCC");
+                            Console.ResetColor();
+                            break;
+                        case 6:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Red);
+                            Console.Write("!!!!");
+                            Console.ResetColor();
+                            break;
+                    }
+                }
+                Console.Write($" {x + 1} \n");
+                for (int y = 0; y < field.GetLength(1); y++)
+                {
+                    switch (field[x, y])
+                    {
+                        case 0:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Blue);
+                            Console.Write("    ");
+                            Console.ResetColor();
+                            break;
+                        case 1:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Green);
+                            Console.Write("PPPP");
+                            Console.ResetColor();
+                            break;
+                        case 2:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkYellow);
+                            Console.Write("SSSS");
+                            Console.ResetColor();
+                            break;
+                        case 3:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkMagenta);
+                            Console.Write("DDDD");
+                            Console.ResetColor();
+                            break;
+                        case 4:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGreen);
+                            Console.Write("BBBB");
+                            Console.ResetColor();
+                            break;
+                        case 5:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGray);
+                            Console.Write("CCCC");
+                            Console.ResetColor();
+                            break;
+                        case 6:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Red);
+                            Console.Write("!!!!");
+                            Console.ResetColor();
+                            break;
+                    }
+                }
+                Console.Write("\n");
+            }
+            Console.WriteLine("");
+            Console.WriteLine("1   2   3   4   5   6   7   8   9   10");
         }
         private static void GenerateBSEnemyField(int[,] enemyField)
+        {
+            bool placementCheck = false;
+            Random rnd = new Random();
+            while (true)
+            {
+                while (placementCheck == false)
+                {
+                retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 1 > 0 && enemyField[x - 1, y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x - 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 1 < 9 && enemyField[x + 1, y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x + 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 1 > 0 && enemyField[x, y - 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x, y - 1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 1 < 9 && enemyField[x, y + 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x, y + 1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x,y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 1 > 0 && enemyField[x-1,y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x - 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 1 < 9 && enemyField[x + 1, y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x + 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 1 > 0 && enemyField[x, y - 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x , y-1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 1 < 9 && enemyField[x, y + 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x, y + 1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 2 > 0 && enemyField[x - 1, y] == 0 && enemyField[x-2, y] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x - 1, y] = 2;
+                                    enemyField[x - 2, y] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 2 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x + 1, y] = 2;
+                                    enemyField[x + 2, y] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 2 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x, y - 1] = 2;
+                                    enemyField[x, y - 2] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 2 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x, y + 1] = 2;
+                                    enemyField[x, y + 2] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 2 > 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x - 1, y] = 3;
+                                    enemyField[x - 2, y] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 2 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x + 1, y] = 3;
+                                    enemyField[x + 2, y] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 2 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x, y - 1] = 3;
+                                    enemyField[x, y - 2] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 2 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x, y + 1] = 3;
+                                    enemyField[x, y + 2] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 3 > 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x - 1, y] = 4;
+                                    enemyField[x - 2, y] = 4;
+                                    enemyField[x - 3, y] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 3 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x + 1, y] = 4;
+                                    enemyField[x + 2, y] = 4;
+                                    enemyField[x + 3, y] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 3 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x, y - 1] = 4;
+                                    enemyField[x, y - 2] = 4;
+                                    enemyField[x, y - 3] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 3 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x, y + 1] = 4;
+                                    enemyField[x, y + 2] = 4;
+                                    enemyField[x, y + 3] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 4 > 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0 && enemyField[x - 4, y] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x - 1, y] = 5;
+                                    enemyField[x - 2, y] = 5;
+                                    enemyField[x - 3, y] = 5;
+                                    enemyField[x - 4, y] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 4 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0 && enemyField[x + 4, y] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x + 1, y] = 5;
+                                    enemyField[x + 2, y] = 5;
+                                    enemyField[x + 3, y] = 5;
+                                    enemyField[x + 4, y] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 4 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x, y - 1] = 5;
+                                    enemyField[x, y - 2] = 5;
+                                    enemyField[x, y - 3] = 5;
+                                    enemyField[x, y - 4] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 4 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x, y + 1] = 5;
+                                    enemyField[x, y + 2] = 5;
+                                    enemyField[x, y + 3] = 5;
+                                    enemyField[x, y + 4] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                break;
+            }
+        }
+        private static void UserFieldGeneration(int[,] playerField)
         {
 
         }
@@ -199,8 +812,17 @@ namespace ClassicGameClient
         }
         private static void MainMenu(out GameState gameState, out bool appRunning)
         {
+            Random rnd = new Random();
             appRunning = true;
             gameState = GameState.MainMenu;
+            int[,] test = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
+            GenerateBSEnemyField(test);
+            ShowBSField(test);
+            for (int i = 0; i < 10; i++)
+            {
+                BSEnemyFire(test);
+            }
+            ShowBSField(test);
             Log("Hi friens ^^.");
             Console.ReadKey();
 
@@ -399,11 +1021,14 @@ namespace ClassicGameClient
         #region BattleShipGame
         private static void SinkAShip(out GameState appState) // Made by Lasse Handberg Gohlke
         {
+            appState = GameState.Chess;
             Console.WriteLine();
-            int[,] playerField = new int[10, 10];
-            int[,] enemyField = new int[10, 10];
-            int[,] attackField = new int[10, 10];
+            int[,] playerField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
+            int[,] enemyField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
+            int[,] attackField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
             bool gameEnd = false;
+            bool playerAlive = false;
+            bool enemyAlive = false;
             GenerateBSEnemyField(enemyField);
             ConsoleColor userColor = ConsoleColor.Green;
             Console.Write("Please enter your name?:");
@@ -445,9 +1070,45 @@ namespace ClassicGameClient
             }
             while (gameEnd == false)
             {
-                
+                foreach (int field in enemyField)
+                {
+                    if (field > 0 && field < 6)
+                    {
+                        enemyAlive = true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                foreach (int field in playerField)
+                {
+                    if (field > 0 && field < 6)
+                    {
+                        playerAlive = true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                if (playerAlive == false)
+                {
+
+                }
+                else if (enemyAlive == true)
+                {
+
+                }
+                else
+                {
+                    Console.WriteLine("Both sides are still alive. The battle continues!");
+                    playerAlive = false;
+                    enemyAlive = false;
+                    Console.ReadKey();
+                }
             }
-            appState = GameState.MainMenu; //I think this is correct....?
+            appState = GameState.MainMenu;
         }
         #endregion
     }
