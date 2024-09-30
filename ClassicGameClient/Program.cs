@@ -87,7 +87,7 @@ namespace ClassicGameClient
         /// <returns></returns>
         private static byte[] InstructionToCordinates(string instruction, out string error)
         {
-            byte[] cords = { 50, 50 };
+            byte[] cords = new byte[2];
             string[] boardCords = {
                 "ABCDEFGH",
                 "87654321"
@@ -122,11 +122,120 @@ namespace ClassicGameClient
         /// <param name="gameState">Writes to gameState to go back to menu.</param>
         private static void Chess(out GameState gameState)
         {
-            bool IsValidChessMove(byte[,] board, byte[] to, byte[] from, ChessPieces chessPiece)
+            byte[,] CopyChessBoard(byte[,] board)
+            {
+                int depth = board.Length / board.GetLength(0);
+                int length = board.GetLength(0);
+                byte[,] temp = new byte[depth,length];
+
+                for (int i = 0; i < depth; i++)
+                {
+                    for (int j = 0; j < length; j++)
+                    {
+                        temp[i, j] = board[i, j];
+                    }
+                }
+
+                return temp;
+            }
+            bool IsValidChessMove(byte[,] board, byte[] to, byte[] from, ChessPieces chessPiece, bool player)
             {
                 bool isValidMove = false;
+                byte piece = (byte)(player ? chessPiece : chessPiece - 6);
+                byte[] possibleMove = new byte[2];
+                bool fieldIsEmpty = false;
 
-
+                switch ((ChessPieces)piece)
+                {
+                    case ChessPieces.WhiteRook:
+                        if (player) {
+                            possibleMove[0] = (byte)(from[0]);
+                            possibleMove[1] = (byte)(from[1] - 2);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && from[1] == 6 && fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                            possibleMove[1] = (byte)(from[1] - 1);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                            possibleMove[0] = (byte)(from[0] -1);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && !fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                            possibleMove[0] = (byte)(from[0] + 1);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && !fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                        } else
+                        {
+                            possibleMove[0] = (byte)(from[0]);
+                            possibleMove[1] = (byte)(from[1] + 2);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && from[1] == 1 && fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                            possibleMove[1] = (byte)(from[1] + 1);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                            possibleMove[0] = (byte)(from[0] - 1);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && !fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                            possibleMove[0] = (byte)(from[0] + 1);
+                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && !fieldIsEmpty)
+                            {
+                                isValidMove = true;
+                            }
+                        }
+                        break;
+                    case ChessPieces.WhiteHorse:
+                        possibleMove = new byte[2];
+                        fieldIsEmpty = false;
+                        int[,] moveSet = {
+                            {1,-2},
+                            {2, -1},
+                            {2, 1},
+                            {1, 2},
+                            {-1, 2},
+                            {-2, 1},
+                            {-2, -1},
+                            {-1, -2},
+                        };
+                        int moves = moveSet.GetLength(0);
+                        for (int i = 0; i < moves; i++)
+                        {
+                            possibleMove[1] = (byte)(from[1] + moveSet[i, 0]);
+                            possibleMove[0] = (byte)(from[0] + moveSet[i, 1]);
+                            if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]))
+                            {
+                                isValidMove = true;
+                            }
+                        }
+                        break;
+                    case ChessPieces.WhiteKing:
+                        break;
+                    case ChessPieces.WhiteTower:
+                        break;
+                    case ChessPieces.WhiteBishop:
+                        break;
+                    case ChessPieces.WhiteQueen:
+                        break;
+                }
 
                 return isValidMove;
             }
@@ -143,14 +252,14 @@ namespace ClassicGameClient
                 Regex inputCheckPattern = new Regex("^([A-H][1-8]-[A-H][1-8])+");
                 string player = (isPlayerTurn) ? "White" : "Black";
                 bool errorHappened = false;
-                byte[,] temp = board;
+                byte[,] temp = CopyChessBoard(board);
                 error = "";
                 string[] arr_instructions = instructions.ToUpper().Split('-');
-                if (inputCheckPattern.IsMatch(instructions.ToUpper()) && instructions.Length <= 5)
+                if (inputCheckPattern.IsMatch(instructions.ToUpper()))
                 {
                     byte[] from = InstructionToCordinates(arr_instructions[0], out error);
                     byte[] to = InstructionToCordinates(arr_instructions[1], out error);
-                    byte moovingPiece = board[from[1], from[0]];
+                    byte movingPiece = board[from[1], from[0]];
                     byte fieldToMove = board[to[1], to[0]];
 
                     switch (isPlayerTurn)
@@ -158,14 +267,18 @@ namespace ClassicGameClient
                         case true:
                             if (!(fieldToMove > 0 && fieldToMove <= 6))
                             {
-                                temp[to[1], to[0]] = moovingPiece;
+                                temp[to[1], to[0]] = movingPiece;
                                 temp[from[1], from[0]] = 0;
                             }
                             else
                             {
                                 error = $"{player} can't capture their own pieces!";
                             }
-                            if (!IsValidChessMove(temp, to, from, (ChessPieces)moovingPiece))
+                            if (!(movingPiece > 0 && movingPiece <= 6))
+                            {
+                                error = $"{player} can't move opponents pieces!";
+                            }
+                            if (!IsValidChessMove(board, to, from, (ChessPieces)movingPiece, isPlayerTurn))
                             {
                                 error = "That isn't a valid move!";
                             }
@@ -173,14 +286,18 @@ namespace ClassicGameClient
                         case false:
                             if (!(fieldToMove > 0 && fieldToMove >= 7))
                             {
-                                temp[to[1], to[0]] = moovingPiece;
+                                temp[to[1], to[0]] = movingPiece;
                                 temp[from[1], from[0]] = 0;
                             }
                             else
                             {
                                 error = $"{player} can't capture their own pieces!";
                             }
-                            if (!IsValidChessMove(temp, to, from, (ChessPieces)moovingPiece))
+                            if (!(movingPiece > 0 && movingPiece >= 7))
+                            {
+                                error = $"{player} can't move opponents pieces!";
+                            }
+                            if (!IsValidChessMove(board, to, from, (ChessPieces)movingPiece, isPlayerTurn))
                             {
                                 error = "That isn't a valid move!";
                             }
@@ -280,7 +397,7 @@ namespace ClassicGameClient
             {
                 int boardDepth = board.Length / board.GetLength(0);
                 ChessPieces character = ChessPieces.None;
-                string characterAsci = " KQBTHRKQBTHR";
+                string characterAsci = " KQBTHR";
                 string[] boardCords = {
                 "ABCDEFGH",
                 "87654321"
@@ -315,7 +432,7 @@ namespace ClassicGameClient
                         if ((byte)character > 0 && (byte)character > 6)
                         {
                             Color(ConsoleColor.Red);
-                            Log(" " + characterAsci[(byte)character]);
+                            Log(" " + characterAsci[(byte)character-6]);
                         }
                         else if ((byte)character > 0 && (byte)character <= 6)
                         {
@@ -382,7 +499,7 @@ namespace ClassicGameClient
                             break;
                         default:
                             gameBoard = TryMovePiece(gameBoard, playerInput, playerTurn, out errorMsg);
-                            playerTurn = (errorMsg != "") ? !playerTurn : playerTurn;
+                            playerTurn = (errorMsg == "") ? !playerTurn : playerTurn;
                             break;
                     }
                 }
