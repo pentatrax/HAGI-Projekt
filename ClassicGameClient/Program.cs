@@ -135,7 +135,6 @@ namespace ClassicGameClient
                     Console.ResetColor();
                 }
             }
-
         }
         private static void BSPlayerFire(int[,] enemyField, int[,] attackField)
         {
@@ -755,7 +754,810 @@ namespace ClassicGameClient
         }
         private static void UserFieldGeneration(int[,] playerField)
         {
+            int shipID;
+            bool placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 1;
+            retry:
+                ShowBSField(playerField);
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 1 > 0 && playerField[x - 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x - 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 1 < 9 && playerField[x + 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x + 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 1 > 0 && playerField[x, y - 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y - 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 1 < 9 && playerField[x, y + 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y + 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                                
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                    
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 1;
+            retry:
+                ShowBSField(playerField);
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 1 > 0 && playerField[x - 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x - 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 1 < 9 && playerField[x + 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x + 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 1 > 0 && playerField[x, y - 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y - 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 1 < 9 && playerField[x, y + 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y + 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
 
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 2;
+            retry:
+                ShowBSField(playerField);
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 2 > 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x - 1, y] = 2;
+                                            playerField[x - 2, y] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 2 < 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x + 1, y] = 2;
+                                            playerField[x + 2, y] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 2 > 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x, y - 1] = 2;
+                                            playerField[x, y - 2] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 2 < 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x, y + 1] = 2;
+                                            playerField[x, y + 2] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 3;
+            retry:
+                ShowBSField(playerField);
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction))
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 2 > 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x - 1, y] = 3;
+                                            playerField[x - 2, y] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 2 < 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x + 1, y] = 3;
+                                            playerField[x + 2, y] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 2 > 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x, y - 1] = 3;
+                                            playerField[x, y - 2] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 2 < 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x, y + 1] = 3;
+                                            playerField[x, y + 2] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                    
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 4;
+            retry:
+                ShowBSField(playerField);
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0) 
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                    if(int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction))
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 3 > 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0 && playerField[x - 3, y] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x - 1, y] = 4;
+                                            playerField[x - 2, y] = 4;
+                                            playerField[x - 3, y] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 3 < 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0 && playerField[x + 3, y] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x + 1, y] = 4;
+                                            playerField[x + 2, y] = 4;
+                                            playerField[x + 3, y] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 3 > 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0 && playerField[x, y - 3] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x, y - 1] = 4;
+                                            playerField[x, y - 2] = 4;
+                                            playerField[x, y - 3] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 3 < 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0 && playerField[x, y - 3] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x, y + 1] = 4;
+                                            playerField[x, y + 2] = 4;
+                                            playerField[x, y + 3] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 5;
+            retry:
+                ShowBSField(playerField);
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 4 > 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0 && playerField[x - 3, y] == 0 && playerField[x - 4, y] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x - 1, y] = 5;
+                                            playerField[x - 2, y] = 5;
+                                            playerField[x - 3, y] = 5;
+                                            playerField[x - 4, y] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 4 < 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0 && playerField[x + 3, y] == 0 && playerField[x + 4, y] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x + 1, y] = 5;
+                                            playerField[x + 2, y] = 5;
+                                            playerField[x + 3, y] = 5;
+                                            playerField[x + 4, y] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 4 > 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0 && playerField[x, y - 3] == 0 && playerField[x, y - 4] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x, y - 1] = 5;
+                                            playerField[x, y - 2] = 5;
+                                            playerField[x, y - 3] = 5;
+                                            playerField[x, y - 4] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 4 < 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0 && playerField[x, y - 3] == 0 && playerField[x, y - 4] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x, y + 1] = 5;
+                                            playerField[x, y + 2] = 5;
+                                            playerField[x, y + 3] = 5;
+                                            playerField[x, y + 4] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                                
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                    
+            }
         }
         #endregion
         private static byte[] InstructionToCordinates(string instruction, out string error)
@@ -816,7 +1618,7 @@ namespace ClassicGameClient
             appRunning = true;
             gameState = GameState.MainMenu;
             int[,] test = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
-            GenerateBSEnemyField(test);
+            UserFieldGeneration(test);
             ShowBSField(test);
             for (int i = 0; i < 10; i++)
             {
