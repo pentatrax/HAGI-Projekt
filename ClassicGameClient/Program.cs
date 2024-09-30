@@ -215,8 +215,15 @@ namespace ClassicGameClient
         }
         private static void ShowBSField(int[,] field)
         {
+            Console.Write("    ");
+            for (int i = 0; i < field.GetLength(0); i++)
+            {
+                Console.Write("    ");
+            }
+            Console.Write("X:\n");
             for (int x = 0; x < field.GetLength(0); x++)
             {
+                Console.Write("   ");
                 for (int y = 0; y < field.GetLength(1); y++)
                 {
                     switch (field[x, y])
@@ -265,7 +272,7 @@ namespace ClassicGameClient
                             break;
                     }
                 }
-                Console.Write($" {x + 1} \n");
+                Console.Write($"  {x + 1} \n   ");
                 for (int y = 0; y < field.GetLength(1); y++)
                 {
                     switch (field[x, y])
@@ -317,7 +324,7 @@ namespace ClassicGameClient
                 Console.Write("\n");
             }
             Console.WriteLine("");
-            Console.WriteLine("1   2   3   4   5   6   7   8   9   10");
+            Console.WriteLine("Y:  1   2   3   4   5   6   7   8   9   10");
         }
         private static void GenerateBSEnemyField(int[,] enemyField)
         {
@@ -761,6 +768,7 @@ namespace ClassicGameClient
                 shipID = 1;
             retry:
                 ShowBSField(playerField);
+                Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
@@ -891,6 +899,7 @@ namespace ClassicGameClient
                 shipID = 1;
             retry:
                 ShowBSField(playerField);
+                Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
@@ -1020,6 +1029,7 @@ namespace ClassicGameClient
                 shipID = 2;
             retry:
                 ShowBSField(playerField);
+                Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
@@ -1152,6 +1162,7 @@ namespace ClassicGameClient
                 shipID = 3;
             retry:
                 ShowBSField(playerField);
+                Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
@@ -1285,6 +1296,7 @@ namespace ClassicGameClient
                 shipID = 4;
             retry:
                 ShowBSField(playerField);
+                Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0) 
                 {
@@ -1422,6 +1434,7 @@ namespace ClassicGameClient
                 shipID = 5;
             retry:
                 ShowBSField(playerField);
+                Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
@@ -1556,7 +1569,11 @@ namespace ClassicGameClient
                     Console.Clear();
                     goto retry;
                 }
-                    
+                Log("Final Placement:\n", ConsoleColor.DarkRed);
+                ShowBSField(playerField);
+                Console.ReadKey();
+                Console.Clear();
+                
             }
         }
         #endregion
@@ -1898,7 +1915,7 @@ namespace ClassicGameClient
                 {
 
                 }
-                else if (enemyAlive == true)
+                else if (enemyAlive == false)
                 {
 
                 }
