@@ -96,6 +96,10 @@ namespace ClassicGameClient
         }
         #region BattleshipFunctions
         //Functions for Battleship Game
+        /// <summary>
+        /// Computer generated attacks to the enemy in battleships
+        /// </summary>
+        /// <param name="playerField"></param>
         private static void BSEnemyFire(int[,] playerField)
         {
             bool shotChecked = false;
@@ -133,7 +137,12 @@ namespace ClassicGameClient
                 }
             }
         }
-        private static void BSPlayerFire(int[,] enemyField, int[,] attackField)
+        /// <summary>
+        /// Using user input to attack an enemy in Battleship
+        /// </summary>
+        /// <param name="enemyField"></param>
+        /// <param name="attackField"></param>
+        private static void BSPlayerFire(int[,] enemyField, int[,] attackField) //
         {
             bool checkedShot = false;
             bool intXChecker = false;
@@ -218,17 +227,21 @@ namespace ClassicGameClient
                 }
             }
         }
-        private static void ShowBSField(int[,] field)
+        /// <summary>
+        /// Show the battlefield with an user-friendly UI
+        /// </summary>
+        /// <param name="field"></param>
+        private static void ShowBSField(int[,] field) //
         {
-            Console.Write("    ");
+            Console.Write("   +");
             for (int i = 0; i < field.GetLength(0); i++)
             {
-                Console.Write("    ");
+                Console.Write("----+");
             }
-            Console.Write("X:\n");
+            Console.Write(" X:\n");
             for (int x = 0; x < field.GetLength(0); x++)
             {
-                Console.Write("   ");
+                Console.Write("   |");
                 for (int y = 0; y < field.GetLength(1); y++)
                 {
                     switch (field[x, y])
@@ -276,8 +289,9 @@ namespace ClassicGameClient
                             Console.ResetColor();
                             break;
                     }
+                    Console.Write("|");
                 }
-                Console.Write($"  {x + 1} \n   ");
+                Console.Write($"  {x + 1} \n   |");
                 for (int y = 0; y < field.GetLength(1); y++)
                 {
                     switch (field[x, y])
@@ -325,12 +339,18 @@ namespace ClassicGameClient
                             Console.ResetColor();
                             break;
                     }
+                    Console.Write("|");
                 }
-                Console.Write("\n");
+
+                Console.Write("\n   +----+----+----+----+----+----+----+----+----+----+\n");
             }
             Console.WriteLine("");
-            Console.WriteLine("Y:  1   2   3   4   5   6   7   8   9   10");
+            Console.WriteLine("Y:   1    2    3    4    5    6    7    8    9    10");
         }
+        /// <summary>
+        /// Generates a random battleship setup (Mainly used for Computer)
+        /// </summary>
+        /// <param name="enemyField"></param>
         private static void GenerateBSEnemyField(int[,] enemyField)
         {
             bool placementCheck = false;
@@ -764,6 +784,10 @@ namespace ClassicGameClient
                 break;
             }
         }
+        /// <summary>
+        /// Using user input to place different boats on the battlefield in Battleship.
+        /// </summary>
+        /// <param name="playerField"></param>
         private static void UserFieldGeneration(int[,] playerField)
         {
             int shipID;
@@ -1581,7 +1605,11 @@ namespace ClassicGameClient
                 
             }
         }
-
+        /// <summary>
+        /// A boolean check to check if an player is still alive on the battlefield in Battleships.
+        /// </summary>
+        /// <param name="Field"></param>
+        /// <returns></returns>
         private static bool IsPlayerAlive(int[,] Field)
         {
             bool enemyAlive = false;
@@ -1859,6 +1887,11 @@ namespace ClassicGameClient
             throw new NotImplementedException();
         }
         #region BattleShipGame
+        /// <summary>
+        /// Battleships game programmed by Lasse Handberg Gohlke. (Player vs. Computer)
+        /// 
+        /// </summary>
+        /// <param name="appState"></param>
         private static void SinkAShip(out GameState appState) // Made by Lasse Handberg Gohlke
         {
             appState = GameState.Chess;
@@ -1884,11 +1917,39 @@ namespace ClassicGameClient
                 string answer = Console.ReadLine().Trim().ToUpper();
                 if (answer == "YES")
                 {
-                    Console.WriteLine("Well... Let's start the game! Lets get you started");
-                    Console.ReadKey();
-                    Console.Clear();
-                    UserFieldGeneration(playerField);
-                    break;
+                    Console.WriteLine("Well... Let's start the game! But first...");
+                redo:
+                    Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                    answer = Console.ReadLine().Trim().ToUpper();
+                    if (answer == "OWN")
+                    {
+                        Console.WriteLine("Well let's get to it!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        UserFieldGeneration(playerField);
+                        break;
+                    }
+                    else if (answer == "COMPUTER")
+                    {
+                        Color(ConsoleColor.DarkRed);
+                        Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                        GenerateBSEnemyField(playerField);
+                        Console.WriteLine("FINAL SETUP!");
+                        Console.ResetColor();
+                        ShowBSField(playerField);
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    }
+                    else
+                    {
+                        Color(ConsoleColor.Red);
+                        Console.WriteLine("Didn't understand?");
+                        Console.ReadKey();
+                        Console.ResetColor();
+                        Console.Clear();
+                        goto redo;
+                    }
                 }
                 else if (answer == "NO")
                 {
@@ -1954,6 +2015,36 @@ namespace ClassicGameClient
                                     attackField[x, y] = 0;
                                 }
                             }
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
                             playerInitiativ = rnd.Next(1, 3);
                             if (playerInitiativ == 1)
                             {
@@ -2001,7 +2092,56 @@ namespace ClassicGameClient
                         string userInput = Console.ReadLine().Trim().ToUpper();
                         if (userInput == "PLAY")
                         {
-
+                            Console.WriteLine("Resetting the playing field!");
+                            for (int x = 0; x < enemyField.GetLength(0); x++) // Resets all the field arrays!
+                            {
+                                for (int y = 0; y < enemyField.GetLength(1); y++)
+                                {
+                                    enemyField[x, y] = 0;
+                                    playerField[x, y] = 0;
+                                    attackField[x, y] = 0;
+                                }
+                            }
+                            GenerateBSEnemyField(enemyField);
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
+                            playerInitiativ = rnd.Next(1, 3);
+                            if (playerInitiativ == 1)
+                            {
+                                Console.WriteLine("Player starts next game!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Computer starts next game!");
+                            }
                         }
                         else if (userInput == "EXIT")
                         {
@@ -2092,8 +2232,37 @@ namespace ClassicGameClient
                                     attackField[x, y] = 0;
                                 }
                             }
-                            UserFieldGeneration(playerField);
                             GenerateBSEnemyField(enemyField);
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
                             playerInitiativ = rnd.Next(1, 3);
                             if (playerInitiativ == 1)
                             {
