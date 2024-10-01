@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Mastermind
@@ -10,25 +11,13 @@ namespace Mastermind
     {
         static void Main(string[] args)
         {
-            int[,] gameBoard = new int[10, 4]
-            /*{
-                {1,2,3,4 },
-                {5,6,1,2 },
-                {3,4,5,6 },
-                {0,0,0,0 },
-                {1,2,3,4 },
-                {5,6,1,2 },
-                {3,4,5,6 },
-                {0,0,0,0 },
-                {1,2,3,4 },
-                {5,6,1,2 }
-            }*/;
+            byte[,] gameBoard = new byte[10, 4];
 
-            
-            Console.WriteLine("Welcome to Mastermind, I am the Codemaster and your objective is to guess the code i will come up with." + //Introduction to the game
+            //Intro screen
+            Console.WriteLine("Welcome to Mastermind, I am the Codemaster and your objective is to guess the code i will come up with." +
                 "\n\nBefore we begin do you want to view the tutorial?");
 
-            #region Tutorial (prompt & guide)
+            #region Tutorial
             bool tutorialPrompt = true;
 
             while (tutorialPrompt == true)
@@ -87,96 +76,56 @@ namespace Mastermind
             Console.WriteLine("I have come up with a code, now your job is to try to guess it!");
 
             #region Gameloop
-            for (int turn = 1; turn <= 10; turn++)
+            for (byte turn = 1; turn <= 10; turn++)
             {
-                //Console.Clear(); //Clears the board before the next round
+                Console.Clear(); //Clears the board before the next round
 
-                Console.WriteLine($"Turn {turn}");
+                #region Display game board + Extra info
+                //Displays turn number at the top of the screen
+                Console.WriteLine($"Turn {turn}\n");
 
-                #region Print game board
-                for (int x = 0; x < gameBoard.GetLength(0); x++)
+                for (byte x = 0; x < gameBoard.GetLength(0); x++)
                 {
-                    #region Displays turn number
-                    switch (x)
+                    #region Displays turn number to the left of the game board
+                    //Displays turn number to the left of the game board
+                    if (x + 1 < 10)
                     {
-                        case 0:
-                            {
-                                Console.Write(" 1. ");
-                                break;
-                            }
-                        case 1:
-                            {
-                                Console.Write(" 2. ");
-                                break;
-                            }
-                        case 2:
-                            {
-                                Console.Write(" 3. ");
-                                break;
-                            }
-                        case 3:
-                            {
-                                Console.Write(" 4. ");
-                                break;
-                            }
-                        case 4:
-                            {
-                                Console.Write(" 5. ");
-                                break;
-                            }
-                        case 5:
-                            {
-                                Console.Write(" 6. ");
-                                break;
-                            }
-                        case 6:
-                            {
-                                Console.Write(" 7. ");
-                                break;
-                            }
-                        case 7:
-                            {
-                                Console.Write(" 8. ");
-                                break;
-                            }
-                        case 8:
-                            {
-                                Console.Write(" 9. ");
-                                break;
-                            }
-                        case 9:
-                            {
-                                Console.Write("10. ");
-                                break;
-                            }
+                        Console.Write(" " + (x + 1) + ". ");
+                    }
+                    else
+                    {
+                        Console.Write(x + 1 +". ");
                     }
                     #endregion
 
-                    for (int y = 0; y < gameBoard.GetLength(1); y++) //Changing background color according to the values in gameBoard array
+                    #region Display gameboard
+                    //Displays gameboard as cells of 2 spaces with background color corresponding to values in gameBoard array 
+                    for (byte y = 0; y < gameBoard.GetLength(1); y++)
                     {
                         ColorSwitch(gameBoard[x, y]);
                         Console.Write("  ");
                         
-
                         Console.BackgroundColor = ConsoleColor.Black; //"Resets" background color
                     }
+                    #endregion
 
                     #region Display available colors - Maybe change this
+                    string spacer = "   ";
                     switch (x)
                     {
                         case 1:
                             {
-                                Console.Write("   Colors you can guess:");
+                                Console.Write(spacer + "Colors available for guess:");
                                 break;
                             }
                         case 2:
                             {
-                                Console.Write("   Red - Green - Blue");
+                                Console.Write(spacer + "Red/R - Green/G - Blue/B");
                                 break;
                             }
                         case 3:
                             {
-                                Console.Write("   Yellow - Magenta - Cyan");
+                                Console.Write(spacer + "Yellow/Y - Magenta/M - Cyan/C");
                                 break;
                             }
                         default:
@@ -190,71 +139,111 @@ namespace Mastermind
                 }
                 #endregion
 
-                #region Guess
-                Console.WriteLine("\nPlease input your guess using this format:" + //Doesn't check for correct input format yet!!! (maybe use Regex, somehow)
-                    "\n[1st color]-[2nd color]-[3rd color]-[4th color]");
+                #region Guessing
+                Console.WriteLine("\nPlease write your guess using this format:" +
+                    "\n1st color-2nd color-3rd color-4th color");
 
-                string wholeGuess = Console.ReadLine().ToLower(); //Reads input and makes it all lowercase
+                bool guessPrompt = true;
 
-                string[] splitGuess = wholeGuess.Split('-'); //Splits string at every '-' and saves individual strings to splitGuess array
+                string[] splitGuess = new string[4];
 
-                #region Convert string to byte - Make this smarter!!!
-                byte[] byteGuess = new byte[4];
+                while (guessPrompt == true)
+                {
+                    string wholeGuess = Console.ReadLine().ToLower(); //Reads input and makes it all lowercase
 
-                for (byte i = 0; i <= 3; i++) //"Copies" and converts splitGuess to byteGuess byte-array
+                    #region Guess format & specific color authentication
+                    Regex guessFormat = new Regex(@"(\w+-\w+-\w+-\w+)");
+                    bool validGuessFormat = guessFormat.IsMatch(wholeGuess);
+
+                    //Split whole guess (at every '-') into seperate strings and saves in splitGuess string-array
+                    splitGuess = wholeGuess.Split('-');
+                    
+                    if (validGuessFormat == true)
+                    {
+                        foreach (string color in splitGuess)
+                        {
+                            //Color authentication
+                            Regex availableColors = new Regex("red|r|green|g|blue|b|yellow|y|magenta|m|cyan|c");
+                            bool validColor = availableColors.IsMatch(color);
+
+                            if (validColor == true)
+                            {
+                                guessPrompt = false;
+                            }
+                            else
+                            {
+                                guessPrompt = true;
+                                
+                                Console.WriteLine("One or more of the input colors cannot be used, try again");
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Guess does not follow correct format, try again");
+                    }
+                }
+                #endregion
+
+                #region Convert guess strings to bytes
+                //Could have used Array.ConvertAll but it seemed way more complex when i looked it up
+                byte[] splitGuessByte = new byte[splitGuess.GetLength(0)];
+
+                for (byte i = 0; i < splitGuess.GetLength(0); i++) //"Copies" and converts splitGuess to splitGuessByte byte-array
                 {
                     switch (splitGuess[i])
                     {
-                        case "red":
+                        case string n when (n == "red" || n == "r"):
                             {
-                                byteGuess[i] = 1;
+                                splitGuessByte[i] = 1;
                                 break;
                             }
 
-                        case "green":
+                        case string n when (n == "green" || n == "g"):
                             {
-                                byteGuess[i] = 2;
+                                splitGuessByte[i] = 2;
                                 break;
                             }
 
-                        case "blue":
+                        case string n when (n == "blue" || n == "b"):
                             {
-                                byteGuess[i] = 3;
+                                splitGuessByte[i] = 3;
                                 break;
                             }
 
-                        case "yellow":
+                        case string n when (n == "yellow" || n == "y"):
                             {
-                                byteGuess[i] = 4;
+                                splitGuessByte[i] = 4;
                                 break;
                             }
 
-                        case "magenta":
+                        case string n when (n == "magenta" || n == "m"):
                             {
-                                byteGuess[i] = 5;
+                                splitGuessByte[i] = 5;
                                 break;
                             }
 
-                        case "cyan":
+                        case string n when (n == "cyan" || n == "c"):
                             {
-                                byteGuess[i] = 6;
+                                splitGuessByte[i] = 6;
                                 break;
                             }
                     }
                 }
-
-                foreach (byte digit in byteGuess)
-                {
-                    Console.Write(digit);
-                }
-                Console.WriteLine();
                 #endregion
 
+                //Save guess to gameboard
+                for (byte y = 0; y < gameBoard.GetLength(1); y++)
+                {
+                    gameBoard[turn - 1, y] = splitGuessByte[y];
+                }
                 #endregion
             }
             #endregion
         }
-        static void ColorSwitch(int input) //Changes background color based on int value input
+        static void ColorSwitch(byte input) //Changes background color based on byte value input
         {
             switch (input)
             {
@@ -275,11 +264,11 @@ namespace Mastermind
                     break;
 
                 case 5:
-                    Console.BackgroundColor = ConsoleColor.Cyan;
+                    Console.BackgroundColor = ConsoleColor.Magenta;
                     break;
 
                 case 6:
-                    Console.BackgroundColor = ConsoleColor.Magenta;
+                    Console.BackgroundColor = ConsoleColor.Cyan;
                     break;
 
                 default:
