@@ -394,14 +394,12 @@ namespace ClassicGameClient
             {
                 PlayerNames();
             }
-            #endregion
-
-            //Starts the main function cycle
             Console.Clear();
             if (quit == false)
             {
                 WriteBoard();
             }
+            #endregion
 
             //Game end conditions
             #region _End
@@ -412,7 +410,7 @@ namespace ClassicGameClient
             #endregion
 
 
-
+            
 
             //--------------------------------------------------FUNCTIONS--------------------------------------------------
             #region PlayerCount
@@ -433,7 +431,13 @@ namespace ClassicGameClient
                     {
                         if (value2 < 1 || value2 > 10)
                         {
-                            Console.WriteLine("Out of range!");
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Out of range! Max 10 players.");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            AsciiScroll();
+                            Console.Write("Player count: ");
                         }
                         else
                         {
@@ -442,8 +446,10 @@ namespace ClassicGameClient
                         }
                     }
                     else
-                    { 
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Error: Input is not valid a number. Please try again.", true);
+                        Console.ResetColor();
                         Console.ReadKey();
                         Console.Clear();
                         AsciiScroll();
@@ -479,7 +485,9 @@ namespace ClassicGameClient
                     }
                     while ((redoAnswer != "yes") && (redoAnswer != "no") && (redoAnswer != "") && (quit == false))
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Invalid input.");
+                        Console.ResetColor();
                         Console.ReadKey();
                         Console.Clear();
                         AsciiScroll();
@@ -509,18 +517,18 @@ namespace ClassicGameClient
             void WriteBoard(bool proceed = true)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("   _________________X_______________");
-                Console.WriteLine(" |    ");
-                Console.WriteLine(" |    +---+ +---+ +---+ +---+ +---+");
+                Console.WriteLine("                                       __________________X_______________");
+                Console.WriteLine("                                      |    ");
+                Console.WriteLine("                                      |    +---+ +---+ +---+ +---+ +---+");
                 for (int x = 0; x < questionsArray.GetLength(0); x++)
                 {
                     if (x == 2)
                     {
-                        Console.Write(" Y    ");
+                        Console.Write("                                      Y    ");
                     }
                     else
                     {
-                        Console.Write(" |    ");
+                        Console.Write("                                      |    ");
                     }
                     for (int y = 0; y < questionsArray.GetLength(1); y++)
                     {
@@ -534,11 +542,11 @@ namespace ClassicGameClient
                         }
                         else
                         {
-                            Console.Write($" {pointsArray[x, y]}    ");
+                            Console.Write($"|   | ");
                         }
                     }
                     Console.WriteLine();
-                    Console.WriteLine(" |    +---+ +---+ +---+ +---+ +---+");
+                    Console.WriteLine("                                      |    +---+ +---+ +---+ +---+ +---+");
                 }
                 Console.ResetColor();
                 Console.WriteLine();
@@ -553,7 +561,7 @@ namespace ClassicGameClient
                         Console.WriteLine($"   {playerNames[x]}: {playerScores[x]} points");
                     }
                 }
-                Console.WriteLine("Which question do you want to choose?   ");
+                Console.WriteLine("                                      Which question do you want to choose?   ");
                 if (proceed == true)
                 {
                     SelectQuestion();
@@ -572,7 +580,7 @@ namespace ClassicGameClient
                 string stringChoiceX;
                 string stringChoiceY;
                 Console.WriteLine();
-                Console.Write("X axis: ");
+                Console.Write("                                      X axis: ");
                 while (quit == false)
                 {
                     stringChoiceX = (Console.ReadLine());
@@ -590,25 +598,29 @@ namespace ClassicGameClient
                         }
                         else
                         {
-                            Console.WriteLine($"Not within range. Please select between 1 and {pointsArray.GetLength(0)}.");
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"                                 Not within range. Please select between 1 and {pointsArray.GetLength(0)}.");
+                            Console.ResetColor();
                             Console.ReadKey();
                             Console.Clear();
                             WriteBoard(false);
                             Console.WriteLine();
-                            Console.Write("X axis: ");
+                            Console.Write("                                      X axis: ");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Error: Input is not valid a number. Please try again.");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("                               Error: Input is not valid a number. Please try again.");
+                        Console.ResetColor();
                         Console.ReadKey();
                         Console.Clear();
                         WriteBoard(false);
                         Console.WriteLine();
-                        Console.Write("X axis: ");
+                        Console.Write("                                      X axis: ");
                     }
                 }
-                Console.Write("Y axis: ");
+                Console.Write("                                      Y axis: ");
                 while (quit == false)
                 {
                     stringChoiceY = (Console.ReadLine());
@@ -626,29 +638,35 @@ namespace ClassicGameClient
                         }
                         else
                         {
-                            Console.WriteLine($"Not within range. Please select between 1 and {pointsArray.Length / pointsArray.GetLength(0)}.");
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"                                 Not within range. Please select between 1 and {pointsArray.Length / pointsArray.GetLength(0)}.");
+                            Console.ResetColor();
                             Console.ReadKey();
                             Console.Clear();
                             WriteBoard(false);
                             Console.WriteLine();
-                            Console.WriteLine($"X axis: {intChoiceX + 1}");
-                            Console.Write("Y axis: ");
+                            Console.WriteLine($"                                      X axis: {intChoiceX + 1}");
+                            Console.Write("                                      Y axis: ");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Error: Input is not valid a number. Please try again.");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("                               Error: Input is not valid a number. Please try again.");
+                        Console.ResetColor();
                         Console.ReadKey();
                         Console.Clear();
                         WriteBoard(false);
                         Console.WriteLine();
-                        Console.WriteLine($"X axis: {intChoiceX + 1}");
-                        Console.Write("Y axis: ");
+                        Console.WriteLine($"                                      X axis: {intChoiceX + 1}");
+                        Console.Write("                                      Y axis: ");
                     }
                 }
-                if (pointsArray[intChoiceY, intChoiceX] == 0)
+                if ((pointsArray[intChoiceY, intChoiceX] == 0) && (quit == false))
                 {
-                    Console.WriteLine("That question is already answered! Please choose a new one.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("                            That question is already answered! Please choose a new one.");
+                    Console.ResetColor();
                     Console.ReadKey();
                     Console.Clear();
                     WriteBoard();
@@ -716,6 +734,8 @@ namespace ClassicGameClient
                         {
                             Console.WriteLine("Wrong answer!");
                             currentGuesses--;
+                            pointsArray[intChoiceY, intChoiceX] = 0;
+                            Console.ReadKey();
                             Console.Clear();
                             WriteQuestion();
                         }
@@ -732,6 +752,7 @@ namespace ClassicGameClient
                             currentPlayer = 0;
                         }
                         Console.ReadKey();
+                        Console.Clear();
                         WriteBoard();
                     }
                 }
