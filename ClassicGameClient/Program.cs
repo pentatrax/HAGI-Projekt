@@ -15,7 +15,7 @@ namespace ClassicGameClient
         static void Main(string[] args)
         {
             bool appRunning = true;
-            GameState appState = GameState.MainMenu;
+            GameState appState = GameState.SinkAShip;
             while (appRunning)
             {
                 switch (appState)
@@ -1192,18 +1192,18 @@ namespace ClassicGameClient
             retry:
                 ShowBSField(playerField);
                 Console.WriteLine("");
-                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
                     x--;
-                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
                     if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
                     {
                         y--;
                         if (playerField[x, y] == 0)
                         {
                             Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
-                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces): ");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces): ");
                             if (int.TryParse(Console.ReadLine().Trim(), out int direction))
                             {
                                 switch (direction)
@@ -1931,8 +1931,10 @@ namespace ClassicGameClient
                     }
                     else if (answer == "COMPUTER")
                     {
+                        Console.Clear();
                         Color(ConsoleColor.DarkRed);
                         Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                        Console.ReadKey();
                         GenerateBSEnemyField(playerField);
                         Console.WriteLine("FINAL SETUP!");
                         Console.ResetColor();
@@ -2027,6 +2029,7 @@ namespace ClassicGameClient
                             }
                             else if (answer == "COMPUTER")
                             {
+                                Console.Clear();
                                 Color(ConsoleColor.DarkRed);
                                 Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
                                 GenerateBSEnemyField(playerField);
@@ -2115,6 +2118,7 @@ namespace ClassicGameClient
                             }
                             else if (answer == "COMPUTER")
                             {
+                                Console.Clear();
                                 Color(ConsoleColor.DarkRed);
                                 Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
                                 GenerateBSEnemyField(playerField);
@@ -2183,7 +2187,57 @@ namespace ClassicGameClient
                         string userInput = Console.ReadLine().Trim().ToUpper();
                         if (userInput == "PLAY")
                         {
-
+                            Console.WriteLine("Resetting the playing field!");
+                            for (int x = 0; x < enemyField.GetLength(0); x++) // Resets all the field arrays!
+                            {
+                                for (int y = 0; y < enemyField.GetLength(1); y++)
+                                {
+                                    enemyField[x, y] = 0;
+                                    playerField[x, y] = 0;
+                                    attackField[x, y] = 0;
+                                }
+                            }
+                            GenerateBSEnemyField(enemyField);
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Console.Clear();
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
+                            playerInitiativ = rnd.Next(1, 3);
+                            if (playerInitiativ == 1)
+                            {
+                                Console.WriteLine("Player starts next game!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Computer starts next game!");
+                            }
                         }
                         else if (userInput == "EXIT")
                         {
