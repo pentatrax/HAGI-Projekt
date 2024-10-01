@@ -15,7 +15,7 @@ namespace ClassicGameClient
         static void Main(string[] args)
         {
             bool appRunning = true;
-            GameState appState = GameState.SinkAShip;
+            GameState appState = GameState.MainMenu;
             while (appRunning)
             {
                 switch (appState)
