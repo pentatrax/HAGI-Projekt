@@ -375,13 +375,14 @@ namespace ClassicGameClient
             int intChoiceY = 0;
             int currentGuesses;
             string answer;
+            bool quit = false;
             #endregion
 
             //Start game
             #region _StartGame
             appState = GameState.Jeopardy;
             AsciiScroll();
-            int playerCount = PlayerCount();
+            int playerCount = PlayerCount(out appState);
             Array.Resize<string>(ref playerNames, playerCount);
             Array.Resize<int>(ref playerScores, playerCount);
             AsciiScroll();
@@ -389,11 +390,18 @@ namespace ClassicGameClient
             {
                 playerScores[x] = 0;
             }
-            PlayerNames();
+            if (quit == false)
+            {
+                PlayerNames();
+            }
             #endregion
 
             //Starts the main function cycle
-            WriteBoard();
+            Console.Clear();
+            if (quit == false)
+            {
+                WriteBoard();
+            }
 
             //Game end conditions
             #region _End
@@ -408,14 +416,19 @@ namespace ClassicGameClient
 
             //--------------------------------------------------FUNCTIONS--------------------------------------------------
             #region PlayerCount
-            int PlayerCount()
+            int PlayerCount(out GameState state)
             {
+                state = GameState.Jeopardy;
                 Console.Write("Player count: ");
                 int value2;
-                while (true)
+                while (quit == false)
                 {
                     string value1 = Console.ReadLine();
-                    QuitGame(value1)
+                    if (value1 == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
                     if (int.TryParse(value1, out value2))
                     {
                         if (value2 < 1 || value2 > 10)
@@ -437,6 +450,7 @@ namespace ClassicGameClient
                         Console.Write("Player count: ");
                     }
                 }
+                return 0;
             }
             #endregion
 
@@ -447,33 +461,45 @@ namespace ClassicGameClient
                 {
                     Console.Write($"Player {i + 1}'s name: ");
                     playerNames[i] = (Console.ReadLine());
+                    if (playerNames[i] == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
                     Console.Clear();
                     AsciiScroll();
                 }
                 Console.WriteLine("Confirm players? Type yes/no to confirm or redo player names.");
-                string redoAnswer = Console.ReadLine();
-                while ((redoAnswer != "yes") && (redoAnswer != "no") && (redoAnswer != ""))
+                if (quit == false)
                 {
-                    Console.WriteLine("Invalid input.");
-                    Console.ReadKey();
-                    Console.Clear();
-                    AsciiScroll();
-                    Console.WriteLine("Confirm players? Type yes/no to confirm or redo player names.");
-                    redoAnswer = Console.ReadLine();
-                }
-                if (redoAnswer == "no")
-                {
-                    Console.Clear();
-                    AsciiScroll();
-                    PlayerNames();
-                }
-                else
-                {
-                    Console.Clear();
-                    AsciiScroll();
-                    Console.WriteLine("Great, lets play! Press any key to continue.");
-                    Console.ReadKey();
-                    Console.Clear();
+                    string redoAnswer = Console.ReadLine();
+                    if (redoAnswer == "/quit")
+                    {
+                        quit = true;
+                    }
+                    while ((redoAnswer != "yes") && (redoAnswer != "no") && (redoAnswer != "") && (quit == false))
+                    {
+                        Console.WriteLine("Invalid input.");
+                        Console.ReadKey();
+                        Console.Clear();
+                        AsciiScroll();
+                        Console.WriteLine("Confirm players? Type yes/no to confirm or redo player names.");
+                        redoAnswer = Console.ReadLine();
+                    }
+                    if (redoAnswer == "no")
+                    {
+                        Console.Clear();
+                        AsciiScroll();
+                        PlayerNames();
+                    }
+                    else if (quit == false)
+                    {
+                        Console.Clear();
+                        AsciiScroll();
+                        Console.WriteLine("Great, lets play! Press any key to continue.");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
                 }
             }
             #endregion
@@ -547,9 +573,14 @@ namespace ClassicGameClient
                 string stringChoiceY;
                 Console.WriteLine();
                 Console.Write("X axis: ");
-                while (true)
+                while (quit == false)
                 {
                     stringChoiceX = (Console.ReadLine());
+                    if (stringChoiceX == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
                     if (int.TryParse(stringChoiceX, out intChoiceX))
                     {
                         if (intChoiceX >= 1 && intChoiceX <= pointsArray.GetLength(0))
@@ -578,9 +609,14 @@ namespace ClassicGameClient
                     }
                 }
                 Console.Write("Y axis: ");
-                while (true)
+                while (quit == false)
                 {
                     stringChoiceY = (Console.ReadLine());
+                    if (stringChoiceY == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
                     if (int.TryParse(stringChoiceY, out intChoiceY))
                     {
                         if (intChoiceY >= 1 && intChoiceY <= (pointsArray.Length / pointsArray.GetLength(0)))
@@ -619,7 +655,10 @@ namespace ClassicGameClient
                 }
                 currentGuesses = 3;
                 Console.Clear();
-                WriteQuestion();
+                if (quit == false)
+                {
+                    WriteQuestion();
+                }
             }
             #endregion
 
@@ -645,12 +684,17 @@ namespace ClassicGameClient
             #region ReadAnswer
             void ReadAnswer()
             {
-                while (true)
+                while (quit == false)
                 {
                     if (currentGuesses != 0)
                     {
                         Console.Write("Answer: ");
                         answer = Console.ReadLine().ToLower();
+                        if (answer == "/quit")
+                        {
+                            quit = true;
+                            break;
+                        }
                         if (answer == answersArray[intChoiceY, intChoiceX].ToLower())
                         {
                             Console.WriteLine($"Correct! Awarded {pointsArray[intChoiceY, intChoiceX]} points to {playerNames[currentPlayer]}.");
@@ -697,6 +741,9 @@ namespace ClassicGameClient
             #region Ascii Scroll
             void AsciiScroll()
             {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("You may type '/quit' at any time during the game to return to the main menu.");
+                Console.ResetColor();
                 Console.WriteLine("   __________________________________");
                 Console.WriteLine(" / \\                                 \\.");
                 Console.WriteLine("|   |      Welcome to Jeopardy!      |.");
@@ -734,16 +781,6 @@ namespace ClassicGameClient
                 Console.WriteLine();
             }
 
-            #endregion
-
-            #region QuitGame
-            void QuitGame(string x)
-            {
-                if (x.ToLower == "/quit")
-                {
-                    GameState appState = GameState.MainMenu;
-                }
-            }
             #endregion
         }
         #region Battleship
