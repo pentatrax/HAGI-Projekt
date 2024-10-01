@@ -415,9 +415,10 @@ namespace ClassicGameClient
                 while (true)
                 {
                     string value1 = Console.ReadLine();
+                    QuitGame(value1)
                     if (int.TryParse(value1, out value2))
                     {
-                        if (value2 < 1 || value2 > 5)
+                        if (value2 < 1 || value2 > 10)
                         {
                             Console.WriteLine("Out of range!");
                         }
@@ -481,22 +482,29 @@ namespace ClassicGameClient
             #region WriteBoard
             void WriteBoard(bool proceed = true)
             {
-                Console.WriteLine("   _____________X_______________");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("   _________________X_______________");
+                Console.WriteLine(" |    ");
+                Console.WriteLine(" |    +---+ +---+ +---+ +---+ +---+");
                 for (int x = 0; x < questionsArray.GetLength(0); x++)
                 {
                     if (x == 2)
                     {
-                        Console.Write(" Y ");
+                        Console.Write(" Y    ");
                     }
                     else
                     {
-                        Console.Write(" | ");
+                        Console.Write(" |    ");
                     }
                     for (int y = 0; y < questionsArray.GetLength(1); y++)
                     {
                         if (pointsArray[x, y] != 0)
                         {
-                            Console.Write($"{pointsArray[x, y]}   ");
+                            Console.Write($"|");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.Write(pointsArray[x, y]);
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write("| ");
                         }
                         else
                         {
@@ -504,8 +512,9 @@ namespace ClassicGameClient
                         }
                     }
                     Console.WriteLine();
-                    Console.WriteLine(" | ");
+                    Console.WriteLine(" |    +---+ +---+ +---+ +---+ +---+");
                 }
+                Console.ResetColor();
                 Console.WriteLine();
                 for (int x = 0; x < playerNames.GetLength(0); x++)
                 {
@@ -695,7 +704,7 @@ namespace ClassicGameClient
                 Console.WriteLine("    | Jeopardy, answering a range of |.");
                 Console.WriteLine("    |  questions posed as answers.   |.");
                 Console.WriteLine("    |                                |.");
-                Console.WriteLine("    | How many are playing?  Max 5.  |.");
+                Console.WriteLine("    | How many are playing? Max 10.  |.");
                 Console.WriteLine("    |                                |.");
 
                 for (int x = 0; x < playerNames.Length; x++)
@@ -703,29 +712,18 @@ namespace ClassicGameClient
                     if (playerNames[x] == null)
                     {
                         Console.Write("    | - ");
+                        Console.WriteLine("                             |.");
                     }
                     else
                     {
                         Console.Write("    | - ");
                         Console.Write(playerNames[x]);
+                        for (int y = 0; y < 29 - playerNames[x].Length; y++)
+                        {
+                            Console.Write(" ");
+                        }
+                        Console.WriteLine("|.");
                     }
-
-                    //if (writeNames == true)
-                    //{
-                    //    Console.Write(playerNames[x]);
-                    //    //int repeatCount = playerNames[x].Length;
-
-
-                    //    for (int y = 0; y < playerNames[x].Length; y++)
-                    //    {
-                    //        Console.WriteLine(" -");
-                    //    }
-                    //    //Console.WriteLine();
-                    //}
-                    //else
-                    //{
-                    Console.WriteLine("                             |.");
-                    //}
                 }
 
 
@@ -736,6 +734,16 @@ namespace ClassicGameClient
                 Console.WriteLine();
             }
 
+            #endregion
+
+            #region QuitGame
+            void QuitGame(string x)
+            {
+                if (x.ToLower == "/quit")
+                {
+                    GameState appState = GameState.MainMenu;
+                }
+            }
             #endregion
         }
         #region Battleship
