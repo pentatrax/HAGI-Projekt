@@ -15,7 +15,7 @@ namespace ClassicGameClient
         static void Main(string[] args)
         {
             bool appRunning = true;
-            GameState appState = GameState.SinkAShip;
+            GameState appState = GameState.MainMenu;
             while (appRunning)
             {
                 switch (appState)
@@ -1688,11 +1688,52 @@ namespace ClassicGameClient
         }
         private static void MainMenu(out GameState gameState, out bool appRunning)
         {
-            Random rnd = new Random();
             appRunning = true;
             gameState = GameState.MainMenu;
-            Log("Hi friens ^^.");
-            Console.ReadKey();
+            while (true)
+            {
+
+                Console.WriteLine("1 for Chess");
+                Console.WriteLine("2 for MasterMind");
+                Console.WriteLine("3 for Battleship");
+                Console.WriteLine("4 for Jeopardy");
+                Console.WriteLine("5 to exit program");
+                Console.Write("What game do you wanna play?: ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 6 && choice > 0)
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            gameState = GameState.Chess;
+                            Console.Clear();
+                            return;
+                        case 2:
+                            gameState = GameState.Mastermind;
+                            Console.Clear();
+                            return;
+                        case 3:
+                            gameState = GameState.SinkAShip;
+                            Console.Clear();
+                            return;
+                        case 4:
+                            gameState = GameState.Jeopardy;
+                            Console.Clear();
+                            return;
+                        case 5:
+                            appRunning = false;
+                            Console.Clear();
+                            return;
+                    }
+                    break;
+                }
+                else
+                {
+                    Log("Invalid number or Not a number\n", ConsoleColor.DarkRed);
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+
 
         }
         private static void Chess(out GameState gameState)
@@ -1904,6 +1945,9 @@ namespace ClassicGameClient
             bool enemyAlive = false;
             GenerateBSEnemyField(enemyField);
             ConsoleColor userColor = ConsoleColor.Green;
+            Color(ConsoleColor.DarkBlue);
+            Console.WriteLine("    ____          __   __   __             __     _      \r\n   / __ ) ____ _ / /_ / /_ / /___   _____ / /_   (_)____ \r\n  / __  |/ __ `// __// __// // _ \\ / ___// __ \\ / // __ \\\r\n / /_/ // /_/ // /_ / /_ / //  __/(__  )/ / / // // /_/ /\r\n/_____/ \\__,_/ \\__/ \\__//_/ \\___//____//_/ /_//_// .___/ \r\n                                                /_/      ");
+            Console.ResetColor();
             Console.Write("Please enter your name?: ");
             string userName = Console.ReadLine().Trim();
             while (true)
@@ -2350,9 +2394,9 @@ namespace ClassicGameClient
                 if (enemyAlive && playerAlive)
                 {
                 redo:
-                    Console.Write("Both sides are still alive. Do you wanna continue playing? PLAY or EXIT:");
+                    Console.Write("Both sides are still alive. Do you wanna continue playing? PLAY or EXIT: ");
                     string userInput = Console.ReadLine().Trim().ToUpper();
-                    if (userInput == "PLAY")
+                    if (userInput == "PLAY" || userInput == "")
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("The Game continues!");
