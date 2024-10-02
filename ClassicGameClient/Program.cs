@@ -119,17 +119,73 @@ namespace ClassicGameClient
         /// <summary>
         /// Contains the entire Chess game loop.
         /// </summary>
-        /// <param name="gameState">Writes to gameState to go back to menu.</param>
+        /// <param name="gameState">Writes to gameState to change the state of the application.</param>
         private static void Chess(out GameState gameState)
         {
-            bool RookReachedOtherSide(byte[,] board)
+            byte[,] ChangeRook(byte[,] board, string input, byte[] rookCoords, bool player, out string error)
+            {
+                byte[,] temp = CopyChessBoard(board);
+                bool rookChanged = true;
+                error = "";
+                switch (input)
+                {
+                    case "queen":
+                        temp[rookCoords[1], rookCoords[0]] = player?
+                            (byte)ChessPieces.WhiteQueen : (byte)ChessPieces.BlackQueen;
+                        break;
+                    case "bishop":
+                        temp[rookCoords[1], rookCoords[0]] = player ?
+                            (byte)ChessPieces.WhiteBishop : (byte)ChessPieces.BlackBishop;
+                        break;
+                    case "tower":
+                        temp[rookCoords[1], rookCoords[0]] = player ?
+                            (byte)ChessPieces.WhiteTower : (byte)ChessPieces.BlackTower;
+                        break;
+                    case "horse":
+                        temp[rookCoords[1], rookCoords[0]] = player ?
+                            (byte)ChessPieces.WhiteHorse : (byte)ChessPieces.BlackHorse;
+                        break;
+                    default:
+                        error = "Rook can't change into that!";
+                        rookChanged = false;
+                        break;
+                }
+                return rookChanged ? temp : board;
+            }
+            /// <summary>
+            /// Checks both ends of the board to see if a rook has moved to an edge.
+            /// </summary>
+            /// <param name="board">Takes a byte array that is the current state ofthe board.</param>
+            /// <param name="player">Takes a bool value that determines if check white player or not.</param>
+            /// <param name="rookCoords">Outputs the coordinates of the rook to this variable.</param>
+            bool RookReachedOtherSide(byte[,] board, bool player, out byte[] rookCoords)
             {
                 bool reachedOtherSide = false;
+                rookCoords = new byte[2];
+                ChessPieces currentPiece = ChessPieces.None;
+                ChessPieces pieceToCheckFor = player ? ChessPieces.WhiteRook : ChessPieces.BlackRook;
+                byte[] coords = new byte[2];
+                coords[1] = player ? (byte)0 : (byte)(board.GetLength(0)-1);
 
-
-
+                // loops through either white or black rows to check if a rook made it to the other side.
+                for (int i = 0; i < board.GetLength(0); i++)
+                {
+                    coords[0] = (byte)i;
+                    currentPiece = GetBoardPiece(board, coords);
+                    if (currentPiece == pieceToCheckFor)
+                    {
+                        reachedOtherSide = true;
+                        rookCoords[0] = coords[0];
+                        rookCoords[1] = coords[1];
+                        break;
+                    }
+                }
                 return reachedOtherSide;
             }
+            /// <summary>
+            /// Returns a new instance of a given board state.
+            /// </summary>
+            /// <param name="board">The board that should be copied.</param>
             byte[,] CopyChessBoard(byte[,] board)
             {
                 int depth = board.Length / board.GetLength(0);
@@ -146,6 +202,11 @@ namespace ClassicGameClient
 
                 return temp;
             }
+            /// <summary>
+            /// Checks to see if the spot on the board is empty.
+            /// </summary>
+            /// <param name="board">A multi byte array containing the current state of the chess board.</param>
+            /// <param name="to">A byte array containing the coordinates that should be checked if the spot is empty.</param>
             bool BoardSpotIsEmpty(byte[,] board, byte[] to)
             {
                 bool empty = false;
@@ -158,6 +219,11 @@ namespace ClassicGameClient
 
                 return empty;
             }
+            /// <summary>
+            /// Returns a chess piece according to the board state and the given coordinates.
+            /// </summary>
+            /// <param name="board">Takes a multi byte array containing the current board state.</param>
+            /// <param name="coords">Takes a byte array that contains coordinates.</param>
             ChessPieces GetBoardPiece(byte[,] board, byte[] coords)
             {
                 ChessPieces piece = ChessPieces.None;
@@ -169,6 +235,14 @@ namespace ClassicGameClient
                 }
                 return piece;
             }
+            /// <summary>
+            /// Checks if the current move made by the player and returns a bool in case the move is valid or not.
+            /// </summary>
+            /// <param name="board">The version of the board before the move is made.</param>
+            /// <param name="to">A byte array containing the move the player wants to make.</param>
+            /// <param name="from">A byte array containing where the player wants to move from.</param>
+            /// <param name="chessPiece">What chess piece is being moved.</param>
+            /// <param name="player">A bool conveying if the current move is made by the first player or not.</param>
             bool IsValidChessMove(byte[,] board, byte[] to, byte[] from, ChessPieces chessPiece, bool player)
             {
                 bool isValidMove = false;
@@ -187,7 +261,6 @@ namespace ClassicGameClient
                         if (player) {
                             possibleMove[0] = (byte)(from[0]);
                             possibleMove[1] = (byte)(from[1] - 2);
-                            fieldIsEmpty = board[possibleMove[1], possibleMove[0]] == 0;
                             if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && from[1] == 6 && BoardSpotIsEmpty(board, possibleMove))
                             {
                                 isValidMove = true;
@@ -513,6 +586,12 @@ namespace ClassicGameClient
 
                 return (!errorHappened) ? temp : board;
             }
+            /// <summary>
+            /// Converts string to chess piece values.
+            /// </summary>
+            /// <param name="setup">The current row of chess pieces to be converted to values</param>
+            /// <param name="index">What piece in the string to convert.</param>
+            /// <param name="isPlayerChessPiece">A bool value determining if its a white piece or not.</param>
             ChessPieces GetChessPiece(string setup, int index, bool isPlayerChessPieces)
             {
                 ChessPieces value = ChessPieces.None;
@@ -547,6 +626,11 @@ namespace ClassicGameClient
 
                 return value;
             }
+            /// <summary>
+            /// Takes in the board variable and populates it with chess pieces acording to standard chess.
+            /// Returns the populated multi byte array.
+            /// </summary>
+            /// <param name="board">The multi byte array you want to populate with chess pieces.</param>
             byte[,] PopulateBoard(byte[,] board)
             {
                 int boardDepth = board.Length / board.GetLength(0);
@@ -591,6 +675,10 @@ namespace ClassicGameClient
                 }
                 return board;
             }
+            /// <summary>
+            /// Draws the entire chess board according to the given multi byte array.
+            /// </summary>
+            /// <param name="board">Takes the current multi byte array containing chess data.</param>
             void DrawChessBoard(byte[,] board)
             {
                 int boardDepth = board.Length / board.GetLength(0);
@@ -660,7 +748,9 @@ namespace ClassicGameClient
             string errorMsg = "";
             int boardSize = 8;
             byte[,] gameBoard = new byte[boardSize, boardSize];
+            byte[] coordsOfRookThatReachedOtherSide = new byte[2];
             bool inGame = true;
+            bool choosingPiece = false;
             bool playerTurn = true;
             string playerInput = "";
             gameBoard = PopulateBoard(gameBoard);
@@ -698,9 +788,23 @@ namespace ClassicGameClient
                             break;
                         default:
                             gameBoard = TryMovePiece(gameBoard, playerInput, playerTurn, out errorMsg);
-                            if (RookReachedOtherSide(gameBoard))
-                            {
-
+                            while (RookReachedOtherSide(gameBoard, playerTurn, out coordsOfRookThatReachedOtherSide))
+                            {   
+                                Console.Clear();
+                                DrawChessBoard(gameBoard);
+                                Log("Congrats ", ConsoleColor.Green);
+                                if (playerTurn)
+                                {
+                                    Log("White", ConsoleColor.White);
+                                } else
+                                {
+                                    Log("Black", ConsoleColor.Gray);
+                                }
+                                Log(", you managed to get a Rook to the other side!\n", ConsoleColor.Green);
+                                Log("What piece do you want to change it to?\n", ConsoleColor.Yellow);
+                                Log("Choice [Queen / Bishop / Tower / Horse]: ", ConsoleColor.Yellow);
+                                playerInput = Console.ReadLine().ToLower();
+                                gameBoard = ChangeRook(gameBoard, playerInput, coordsOfRookThatReachedOtherSide, playerTurn, out errorMsg);  
                             }
                             playerTurn = (errorMsg == "") ? !playerTurn : playerTurn;
                             break;
