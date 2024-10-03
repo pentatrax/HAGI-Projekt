@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ClassicGameClient
 {
     internal class Program
     {
-        
+
         static void Main(string[] args)
         {
             bool appRunning = true;
@@ -425,16 +420,16 @@ namespace ClassicGameClient
                 placementCheck = false;
                 while (placementCheck == false)
                 {
-                    retry:
+                retry:
                     int x = rnd.Next(0, 10);
                     int y = rnd.Next(0, 10);
-                    if (enemyField[x,y] == 0)
+                    if (enemyField[x, y] == 0)
                     {
                         int direction = rnd.Next(1, 4);
                         switch (direction)
                         {
                             case 1:
-                                if (x - 1 >= 0 && enemyField[x-1,y] == 0)
+                                if (x - 1 >= 0 && enemyField[x - 1, y] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x - 1, y] = 1;
@@ -461,7 +456,7 @@ namespace ClassicGameClient
                                 if (y - 1 >= 0 && enemyField[x, y - 1] == 0)
                                 {
                                     enemyField[x, y] = 1;
-                                    enemyField[x , y-1] = 1;
+                                    enemyField[x, y - 1] = 1;
                                     placementCheck = true;
                                     break;
                                 }
@@ -491,7 +486,7 @@ namespace ClassicGameClient
                 placementCheck = false;
                 while (placementCheck == false)
                 {
-                    retry:
+                retry:
                     int x = rnd.Next(0, 10);
                     int y = rnd.Next(0, 10);
                     if (enemyField[x, y] == 0)
@@ -500,7 +495,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 2 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x-2, y] == 0)
+                                if (x - 2 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0)
                                 {
                                     enemyField[x, y] = 2;
                                     enemyField[x - 1, y] = 2;
@@ -561,7 +556,7 @@ namespace ClassicGameClient
                 placementCheck = false;
                 while (placementCheck == false)
                 {
-                    retry:
+                retry:
                     int x = rnd.Next(0, 10);
                     int y = rnd.Next(0, 10);
                     if (enemyField[x, y] == 0)
@@ -631,7 +626,7 @@ namespace ClassicGameClient
                 placementCheck = false;
                 while (placementCheck == false)
                 {
-                    retry:
+                retry:
                     int x = rnd.Next(0, 10);
                     int y = rnd.Next(0, 10);
                     if (enemyField[x, y] == 0)
@@ -705,7 +700,7 @@ namespace ClassicGameClient
                 placementCheck = false;
                 while (placementCheck == false)
                 {
-                    retry:
+                retry:
                     int x = rnd.Next(0, 10);
                     int y = rnd.Next(0, 10);
                     if (enemyField[x, y] == 0)
@@ -895,7 +890,7 @@ namespace ClassicGameClient
                                 Console.Clear();
                                 goto retry;
                             }
-                                
+
                         }
                         else
                         {
@@ -920,7 +915,7 @@ namespace ClassicGameClient
                     Console.Clear();
                     goto retry;
                 }
-                    
+
             }
             placementCheck = false;
             while (placementCheck == false)
@@ -1317,7 +1312,7 @@ namespace ClassicGameClient
                     Console.Clear();
                     goto retry;
                 }
-                    
+
             }
             placementCheck = false;
             while (placementCheck == false)
@@ -1327,11 +1322,11 @@ namespace ClassicGameClient
                 ShowBSField(playerField);
                 Console.WriteLine("");
                 Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
-                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0) 
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
                 {
                     x--;
                     Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
-                    if(int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
                     {
                         y--;
                         if (playerField[x, y] == 0)
@@ -1455,7 +1450,7 @@ namespace ClassicGameClient
                     Console.Clear();
                     goto retry;
                 }
-                
+
             }
             placementCheck = false;
             while (placementCheck == false)
@@ -1573,7 +1568,7 @@ namespace ClassicGameClient
                                 Console.Clear();
                                 goto retry;
                             }
-                                
+
                         }
                         else
                         {
@@ -1602,7 +1597,7 @@ namespace ClassicGameClient
                 ShowBSField(playerField);
                 Console.ReadKey();
                 Console.Clear();
-                
+
             }
         }
         /// <summary>
@@ -1632,7 +1627,7 @@ namespace ClassicGameClient
             {
                 return false;
             }
-        } 
+        }
         #endregion
         /// <summary>
         /// Translates [a1] coordinates to array coordinates.
@@ -1786,7 +1781,7 @@ namespace ClassicGameClient
                 switch (input)
                 {
                     case "queen":
-                        temp[rookCoords[1], rookCoords[0]] = player?
+                        temp[rookCoords[1], rookCoords[0]] = player ?
                             (byte)ChessPieces.WhiteQueen : (byte)ChessPieces.BlackQueen;
                         break;
                     case "bishop":
@@ -1821,7 +1816,7 @@ namespace ClassicGameClient
                 ChessPieces currentPiece = ChessPieces.None;
                 ChessPieces pieceToCheckFor = player ? ChessPieces.WhiteRook : ChessPieces.BlackRook;
                 byte[] coords = new byte[2];
-                coords[1] = player ? (byte)0 : (byte)(board.GetLength(0)-1);
+                coords[1] = player ? (byte)0 : (byte)(board.GetLength(0) - 1);
 
                 // loops through either white or black rows to check if a rook made it to the other side.
                 for (int i = 0; i < board.GetLength(0); i++)
@@ -1846,7 +1841,7 @@ namespace ClassicGameClient
             {
                 int depth = board.Length / board.GetLength(0);
                 int length = board.GetLength(0);
-                byte[,] temp = new byte[depth,length];
+                byte[,] temp = new byte[depth, length];
 
                 for (int i = 0; i < depth; i++)
                 {
@@ -1914,7 +1909,8 @@ namespace ClassicGameClient
                 switch ((ChessPieces)piece)
                 {
                     case ChessPieces.WhiteRook:
-                        if (player) {
+                        if (player)
+                        {
                             possibleMove[0] = (byte)(from[0]);
                             possibleMove[1] = (byte)(from[1] - 2);
                             if ((to[0] == possibleMove[0] && to[1] == possibleMove[1]) && from[1] == 6 && BoardSpotIsEmpty(board, possibleMove))
@@ -1936,7 +1932,8 @@ namespace ClassicGameClient
                             {
                                 isValidMove = true;
                             }
-                        } else
+                        }
+                        else
                         {
                             possibleMove[0] = (byte)(from[0]);
                             possibleMove[1] = (byte)(from[1] + 2);
@@ -1964,7 +1961,7 @@ namespace ClassicGameClient
                     case ChessPieces.WhiteHorse:
                         possibleMove = new byte[2];
                         fieldIsEmpty = false;
-                        moveSet = new int[8,2]{
+                        moveSet = new int[8, 2]{
                             {1,-2},
                             {2, -1},
                             {2, 1},
@@ -1988,7 +1985,7 @@ namespace ClassicGameClient
                     case ChessPieces.WhiteKing:
                         possibleMove = new byte[2];
                         fieldIsEmpty = false;
-                        moveSet = new int[8,2]{
+                        moveSet = new int[8, 2]{
                             {0,-1},
                             {1,-1},
                             {1, 0},
@@ -2011,7 +2008,7 @@ namespace ClassicGameClient
 
                         break;
                     case ChessPieces.WhiteTower:
-                        moveSet = new int[4,2]
+                        moveSet = new int[4, 2]
                         {
                             {-1,0},
                             {1,0},
@@ -2027,9 +2024,10 @@ namespace ClassicGameClient
                             {
                                 if (j == 0)
                                 {
-                                    possibleMove[1] = (byte)(possibleMove[1] + moveSet[i, 0]*j);
-                                    possibleMove[0] = (byte)(possibleMove[0] + moveSet[i, 1]*j);
-                                } else
+                                    possibleMove[1] = (byte)(possibleMove[1] + moveSet[i, 0] * j);
+                                    possibleMove[0] = (byte)(possibleMove[0] + moveSet[i, 1] * j);
+                                }
+                                else
                                 {
                                     possibleMove[1] = (byte)(possibleMove[1] + moveSet[i, 0]);
                                     possibleMove[0] = (byte)(possibleMove[0] + moveSet[i, 1]);
@@ -2048,12 +2046,13 @@ namespace ClassicGameClient
                                 {
                                     isValidMove = true;
                                     break;
-                                } else if (possibleMoveIsMove)
+                                }
+                                else if (possibleMoveIsMove)
                                 {
                                     isValidMove = true;
                                     break;
                                 }
-                                
+
                             }
                             if (isValidMove) break;
                         }
@@ -2240,8 +2239,8 @@ namespace ClassicGameClient
                     errorHappened = true;
                 }
 
-            return (!errorHappened) ? temp : board;
-        }
+                return (!errorHappened) ? temp : board;
+            }
             /// <summary>
             /// Converts string to chess piece values.
             /// </summary>
@@ -2377,7 +2376,7 @@ namespace ClassicGameClient
                         if ((byte)character > 0 && (byte)character > 6)
                         {
                             Color(ConsoleColor.Red);
-                            Log(" " + characterAsci[(byte)character-6]);
+                            Log(" " + characterAsci[(byte)character - 6]);
                         }
                         else if ((byte)character > 0 && (byte)character <= 6)
                         {
@@ -2406,17 +2405,17 @@ namespace ClassicGameClient
                             Log("Last Move: ", ConsoleColor.Blue);
                             Log(lastMove, ConsoleColor.White);
                             break;
-                        //case 2:
-                        //    Log("   ");
-                        //    Log("Checkmated: ", ConsoleColor.Blue);
-                        //    if (checkMated)
-                        //    {
-                        //        Log("Check Mate!");
-                        //    } else
-                        //    {
-                        //        Log("N/A");
-                        //    }
-                        //    break;
+                            //case 2:
+                            //    Log("   ");
+                            //    Log("Checkmated: ", ConsoleColor.Blue);
+                            //    if (checkMated)
+                            //    {
+                            //        Log("Check Mate!");
+                            //    } else
+                            //    {
+                            //        Log("N/A");
+                            //    }
+                            //    break;
                     }
                     Log("\n");
                 }
@@ -2442,7 +2441,7 @@ namespace ClassicGameClient
             while (inGame)
             {
                 Console.Clear();
-                DrawChessBoard(gameBoard, movesHistory.Split(',').Length-1, movesHistory.Split(',').Last().ToUpper(), checkMate);
+                DrawChessBoard(gameBoard, movesHistory.Split(',').Length - 1, movesHistory.Split(',').Last().ToUpper(), checkMate);
                 if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
                 Log("You can write Restart or Quit to do each respectively.\n", ConsoleColor.Yellow);
                 Log("It's ", ConsoleColor.Yellow);
@@ -2481,14 +2480,15 @@ namespace ClassicGameClient
                                 movesHistory += playerInput;
                             }
                             while (RookReachedOtherSide(gameBoard, playerTurn, out coordsOfRookThatReachedOtherSide))
-                            {   
+                            {
                                 Console.Clear();
-                                DrawChessBoard(gameBoard, movesHistory.Split(',').Length-1, movesHistory.Split(',').Last().ToUpper(), checkMate);
+                                DrawChessBoard(gameBoard, movesHistory.Split(',').Length - 1, movesHistory.Split(',').Last().ToUpper(), checkMate);
                                 Log("Congrats ", ConsoleColor.Green);
                                 if (playerTurn)
                                 {
                                     Log("White", ConsoleColor.White);
-                                } else
+                                }
+                                else
                                 {
                                     Log("Black", ConsoleColor.Gray);
                                 }
@@ -2497,7 +2497,7 @@ namespace ClassicGameClient
                                 Log("What piece do you want to change it to?\n", ConsoleColor.Yellow);
                                 Log("Choice [Queen / Bishop / Tower / Horse]: ", ConsoleColor.Yellow);
                                 playerInput = Console.ReadLine().ToLower();
-                                gameBoard = ChangeRook(gameBoard, playerInput, coordsOfRookThatReachedOtherSide, playerTurn, out errorMsg);  
+                                gameBoard = ChangeRook(gameBoard, playerInput, coordsOfRookThatReachedOtherSide, playerTurn, out errorMsg);
                             }
                             playerTurn = (errorMsg == "") ? !playerTurn : playerTurn;
                             break;
@@ -2541,7 +2541,8 @@ namespace ClassicGameClient
             Console.ResetColor();
             Console.Write("Please enter your name?: ");
             string userName = Console.ReadLine().Trim();
-            while (true)
+            #region IntroductionLoop
+            while (true) // Start loop to set up game first time
             {
                 Console.Write("Welcome ");
                 Color(userColor);
@@ -2607,8 +2608,10 @@ namespace ClassicGameClient
                     Console.Clear();
                 }
             }
-            int playerInitiativ = rnd.Next(1, 3);
-            if (playerInitiativ == 1)
+            #endregion
+            #region Random Initiativ
+            int playerInitiativ = rnd.Next(1, 3); // Randomly made initiativ
+            if (playerInitiativ == 1) 
             {
                 Console.ForegroundColor = userColor;
                 Console.Write(userName);
@@ -2626,7 +2629,9 @@ namespace ClassicGameClient
                 Console.ReadKey();
                 Console.Clear();
             }
-            while (gameEnd == false)
+            #endregion
+            #region Main Loop
+            while (gameEnd == false) // Main Loop for game
             {
                 if (playerInitiativ == 1)
                 {
@@ -3075,6 +3080,7 @@ namespace ClassicGameClient
                     }
                 }
             }
+            #endregion
             appState = GameState.MainMenu;
         }
         #endregion
