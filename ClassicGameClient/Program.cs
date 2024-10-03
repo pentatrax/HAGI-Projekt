@@ -679,7 +679,7 @@ namespace ClassicGameClient
             /// Draws the entire chess board according to the given multi byte array.
             /// </summary>
             /// <param name="board">Takes the current multi byte array containing chess data.</param>
-            void DrawChessBoard(byte[,] board)
+            void DrawChessBoard(byte[,] board, int movesMade, string lastMove, bool checkMated)
             {
                 int boardDepth = board.Length / board.GetLength(0);
                 ChessPieces character = ChessPieces.None;
@@ -735,6 +735,30 @@ namespace ClassicGameClient
                             Log(" " + boardCords[1][i], ConsoleColor.Blue);
                         }
                     }
+                    switch (i)
+                    {
+                        case 0:
+                            Log("   ");
+                            Log("Moves: ", ConsoleColor.Blue);
+                            Log(movesMade, ConsoleColor.White);
+                            break;
+                        case 1:
+                            Log("   ");
+                            Log("Last Move: ", ConsoleColor.Blue);
+                            Log(lastMove, ConsoleColor.White);
+                            break;
+                        case 2:
+                            Log("   ");
+                            Log("Checkmated: ", ConsoleColor.Blue);
+                            if (checkMated)
+                            {
+                                Log("Check Mate!");
+                            } else
+                            {
+                                Log("N/A");
+                            }
+                            break;
+                    }
                     Log("\n");
                 }
                 BackColor(ConsoleColor.Black);
@@ -748,16 +772,18 @@ namespace ClassicGameClient
             string errorMsg = "";
             int boardSize = 8;
             byte[,] gameBoard = new byte[boardSize, boardSize];
+            string movesHistory = "";
             byte[] coordsOfRookThatReachedOtherSide = new byte[2];
             bool inGame = true;
             bool choosingPiece = false;
             bool playerTurn = true;
+            bool checkMate = false;
             string playerInput = "";
             gameBoard = PopulateBoard(gameBoard);
             while (inGame)
             {
                 Console.Clear();
-                DrawChessBoard(gameBoard);
+                DrawChessBoard(gameBoard, movesHistory.Split(',').Length-1, movesHistory.Split(',').Last().ToUpper(), checkMate);
                 if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
                 Log("You can write Restart or Quit to do each respectively.\n", ConsoleColor.Yellow);
                 Log("It's ", ConsoleColor.Yellow);
@@ -770,7 +796,7 @@ namespace ClassicGameClient
                     Log("Blacks ", ConsoleColor.Gray);
                 }
                 Log("turn.\n", ConsoleColor.Yellow);
-                Log("What's your move [A2-B3]?: ", ConsoleColor.Yellow);
+                Log("What's your move [A1-H8]?: ", ConsoleColor.Yellow);
                 playerInput = Console.ReadLine();
                 if (playerInput != "")
                 {
@@ -778,6 +804,8 @@ namespace ClassicGameClient
                     {
                         case "restart":
                             playerTurn = true;
+                            movesHistory = "";
+                            checkMate = false;
                             errorMsg = "";
                             gameBoard = PopulateBoard(gameBoard);
                             break;
@@ -788,10 +816,15 @@ namespace ClassicGameClient
                             break;
                         default:
                             gameBoard = TryMovePiece(gameBoard, playerInput, playerTurn, out errorMsg);
+                            if (errorMsg == "")
+                            {
+                                movesHistory += playerTurn ? ",[W]" : ",[B]";
+                                movesHistory += playerInput;
+                            }
                             while (RookReachedOtherSide(gameBoard, playerTurn, out coordsOfRookThatReachedOtherSide))
                             {   
                                 Console.Clear();
-                                DrawChessBoard(gameBoard);
+                                DrawChessBoard(gameBoard, movesHistory.Split(',').Length-1, movesHistory.Split(',').Last().ToUpper(), checkMate);
                                 Log("Congrats ", ConsoleColor.Green);
                                 if (playerTurn)
                                 {
@@ -800,6 +833,7 @@ namespace ClassicGameClient
                                 {
                                     Log("Black", ConsoleColor.Gray);
                                 }
+                                if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
                                 Log(", you managed to get a Rook to the other side!\n", ConsoleColor.Green);
                                 Log("What piece do you want to change it to?\n", ConsoleColor.Yellow);
                                 Log("Choice [Queen / Bishop / Tower / Horse]: ", ConsoleColor.Yellow);
