@@ -2648,7 +2648,7 @@ namespace ClassicGameClient
                 {
                     Console.Clear();
 
-                    Console.WriteLine("Invalid input, try agian" +
+                    Console.WriteLine("Invalid input, try again" +
                         "\n\nDo you want to view the tutorial?");
                 }
             }
@@ -2667,8 +2667,6 @@ namespace ClassicGameClient
             }
             #endregion
 
-            Console.WriteLine("I have come up with a code, now your job is to try to guess it!");
-
             #region Gameloop
             byte turn = 1;
             bool gameWon = false;
@@ -2678,22 +2676,17 @@ namespace ClassicGameClient
                 Console.Clear(); //Clears the board before the next round
 
                 #region Display game board + Extra info
-                //Displays turn number at the top of the screen
-                if (turn <= 10)
-                {
-                    if (gameWon == true)
-                    {
-                        Console.WriteLine("The end!\n");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Turn {turn}\n");
-                    }
-                }
-                else
+
+                #region Display turn number at the top of the screen
+                if (gameWon == true || turn > 10)
                 {
                     Console.WriteLine("The end!\n");
                 }
+                else
+                {
+                    Console.WriteLine($"Turn {turn}\n");
+                }
+                #endregion
 
                 for (byte x = 0; x < gameBoard.GetLength(0); x++)
                 {
@@ -2723,8 +2716,6 @@ namespace ClassicGameClient
                     //Displays gameboard as cells of 2 spaces with background color corresponding to values in gameBoard array 
                     for (byte y = 0; y < gameBoard.GetLength(1) + feedback.GetLength(1); y++)
                     {
-                        /*Console.ForegroundColor = ConsoleColor.Black;*/ //Unneccesary if i settle on spaces for pegs, useful if the pegs need to stand out
-
                         if (y < 4)
                         {
                             Console.Write('|');
@@ -2753,7 +2744,6 @@ namespace ClassicGameClient
                             }
                         }
 
-                        //Console.ForegroundColor = ConsoleColor.White;
                         Console.BackgroundColor = ConsoleColor.Black; //"Resets" background color
                     }
                     #endregion
@@ -2792,6 +2782,7 @@ namespace ClassicGameClient
 
                 bool guessPrompt = true;
 
+                //Stops the game before player is prompted for their guess if it's turn 11 (of 10, turn 11 is just used to display the gameboard after the end of the game), or they already guessed the code
                 if (turn == 11 || gameWon == true)
                 {
                     guessPrompt = false;
