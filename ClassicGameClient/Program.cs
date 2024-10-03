@@ -1663,14 +1663,115 @@ namespace ClassicGameClient
 
             return cords;
         }
+        #region Main Menu
+        /// <summary>
+        /// The main menu that allows transference between the different games through the change of GameState (An enum)
+        /// </summary>
+        /// <param name="gameState"></param>
+        /// <param name="appRunning"></param>
         private static void MainMenu(out GameState gameState, out bool appRunning)
         {
+            Console.Clear();
             appRunning = true;
             gameState = GameState.MainMenu;
-            Log("Hi friens ^^.");
-            Console.ReadKey();
-            gameState = GameState.Chess;
+            while (true)
+            {
+                Log(" _______  _        _______  _______  _______ _________ _______    _______  _______  _______  _______  _______ \r\n(  ____ \\( \\      (  ___  )(  ____ \\(  ____ \\\\__   __/(  ____ \\  (  ____ \\(  ___  )(       )(  ____ \\(  ____ \\\r\n| (    \\/| (      | (   ) || (    \\/| (    \\/   ) (   | (    \\/  | (    \\/| (   ) || () () || (    \\/| (    \\/\r\n| |      | |      | (___) || (_____ | (_____    | |   | |        | |      | (___) || || || || (__    | (_____ \r\n| |      | |      |  ___  |(_____  )(_____  )   | |   | |        | | ____ |  ___  || |(_)| ||  __)   (_____  )\r\n| |      | |      | (   ) |      ) |      ) |   | |   | |        | | \\_  )| (   ) || |   | || (            ) |\r\n| (____/\\| (____/\\| )   ( |/\\____) |/\\____) |___) (___| (____/\\  | (___) || )   ( || )   ( || (____/\\/\\____) |\r\n(_______/(_______/|/     \\|\\_______)\\_______)\\_______/(_______/  (_______)|/     \\||/     \\|(_______/\\_______)\r\n                                                                                                              \n", ConsoleColor.DarkGreen);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("1");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Chess\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("2");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Mastermind\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("3");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Battleship\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("4");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Jeopardy\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("5");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Credits\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("6");
+                Console.ResetColor();
+                Console.Write(" to ");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write("Exit program\n");
+                Console.ResetColor();
+                Console.Write("So what do you wanna do?: ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 7 && choice > 0)
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            gameState = GameState.Chess;
+                            Console.Clear();
+                            return;
+                        case 2:
+                            gameState = GameState.Mastermind;
+                            Console.Clear();
+                            return;
+                        case 3:
+                            gameState = GameState.SinkAShip;
+                            Console.Clear();
+                            return;
+                        case 4:
+                            gameState = GameState.Jeopardy;
+                            Console.Clear();
+                            return;
+                        case 5:
+                            Console.Clear();
+                            Console.Write("The creators of the different game are as following:\nChess made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Philip Nord Nielsen\n");
+                            Console.ResetColor();
+                            Console.Write("Mastermind made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Thomas Mortensen\n");
+                            Console.ResetColor();
+                            Console.Write("Battleship made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Lasse Handberg Gohlke\n");
+                            Console.ResetColor();
+                            Console.Write("Jeopardy made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Silas Megård Opstrup\n");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            break;
+                        case 6:
+                            appRunning = false;
+                            Console.Clear();
+                            return;
+                    }
+                    break;
+                }
+                else
+                {
+                    Log("\nInvalid number or Not a number", ConsoleColor.DarkRed);
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
         }
+        #endregion
         /// <summary>
         /// Contains the entire Chess game loop.
         /// </summary>
@@ -2141,119 +2242,6 @@ namespace ClassicGameClient
 
             return (!errorHappened) ? temp : board;
         }
-        #region Main Menu
-        /// <summary>
-        /// The main menu that allows transference between the different games through the change of GameState (An enum)
-        /// </summary>
-        /// <param name="gameState"></param>
-        /// <param name="appRunning"></param>
-        private static void MainMenu(out GameState gameState, out bool appRunning)
-        {
-            Console.Clear();
-            appRunning = true;
-            gameState = GameState.MainMenu;
-            while (true)
-            {
-                Log(" _______  _        _______  _______  _______ _________ _______    _______  _______  _______  _______  _______ \r\n(  ____ \\( \\      (  ___  )(  ____ \\(  ____ \\\\__   __/(  ____ \\  (  ____ \\(  ___  )(       )(  ____ \\(  ____ \\\r\n| (    \\/| (      | (   ) || (    \\/| (    \\/   ) (   | (    \\/  | (    \\/| (   ) || () () || (    \\/| (    \\/\r\n| |      | |      | (___) || (_____ | (_____    | |   | |        | |      | (___) || || || || (__    | (_____ \r\n| |      | |      |  ___  |(_____  )(_____  )   | |   | |        | | ____ |  ___  || |(_)| ||  __)   (_____  )\r\n| |      | |      | (   ) |      ) |      ) |   | |   | |        | | \\_  )| (   ) || |   | || (            ) |\r\n| (____/\\| (____/\\| )   ( |/\\____) |/\\____) |___) (___| (____/\\  | (___) || )   ( || )   ( || (____/\\/\\____) |\r\n(_______/(_______/|/     \\|\\_______)\\_______)\\_______/(_______/  (_______)|/     \\||/     \\|(_______/\\_______)\r\n                                                                                                              \n", ConsoleColor.DarkGreen);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("1");
-                Console.ResetColor();
-                Console.Write(" for ");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("Chess\n");               
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("2");
-                Console.ResetColor();
-                Console.Write(" for ");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("Mastermind\n");                
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("3");
-                Console.ResetColor();
-                Console.Write(" for ");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("Battleship\n");
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("4");
-                Console.ResetColor();
-                Console.Write(" for ");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("Jeopardy\n");
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("5");
-                Console.ResetColor();
-                Console.Write(" for ");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("Credits\n");
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("6");
-                Console.ResetColor();
-                Console.Write(" to ");
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.Write("Exit program\n");
-                Console.ResetColor();
-                Console.Write("So what do you wanna do?: ");
-                if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 7 && choice > 0)
-                {
-                    switch (choice)
-                    {
-                        case 1:
-                            gameState = GameState.Chess;
-                            Console.Clear();
-                            return;
-                        case 2:
-                            gameState = GameState.Mastermind;
-                            Console.Clear();
-                            return;
-                        case 3:
-                            gameState = GameState.SinkAShip;
-                            Console.Clear();
-                            return;
-                        case 4:
-                            gameState = GameState.Jeopardy;
-                            Console.Clear();
-                            return;
-                        case 5:
-                            Console.Clear();
-                            Console.Write("The creators of the different game are as following:\nChess made by ");
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write("Philip Nord Nielsen\n");
-                            Console.ResetColor();
-                            Console.Write("Mastermind made by ");
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write("Thomas Mortensen\n");
-                            Console.ResetColor();
-                            Console.Write("Battleship made by ");
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write("Lasse Handberg Gohlke\n");
-                            Console.ResetColor();
-                            Console.Write("Jeopardy made by ");
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write("Silas Megård Opstrup\n");
-                            Console.ResetColor();
-                            Console.ReadKey();
-                            Console.Clear();
-                            break;
-                        case 6:
-                            appRunning = false;
-                            Console.Clear();
-                            return;
-                    }
-                    break;
-                }
-                else
-                {
-                    Log("\nInvalid number or Not a number", ConsoleColor.DarkRed);
-                    Console.ReadKey();
-                    Console.Clear();
-                }
-            }
-        }
-        #endregion
-        private static void Chess(out GameState gameState)
-        {
-                return (!errorHappened) ? temp : board;
-            }
             /// <summary>
             /// Converts string to chess piece values.
             /// </summary>
