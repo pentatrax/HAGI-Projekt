@@ -112,7 +112,7 @@ namespace ClassicGameClient
                     playerField[x, y] = 6;
                     ShowBSField(playerField);
                     Color(ConsoleColor.Blue);
-                    Console.WriteLine($"Splash! Enemy hit water at {x + 1},{y + 1}!");
+                    Console.WriteLine($"\nSplash! Enemy hit water at {x + 1},{y + 1}!");
                     shotChecked = true;
                     Console.ResetColor();
                     Console.ReadKey();
@@ -124,7 +124,7 @@ namespace ClassicGameClient
                     playerField[x, y] = 6;
                     ShowBSField(playerField);
                     Color(ConsoleColor.Red);
-                    Console.WriteLine($"BOOM! Enenmy has hit a/an {hitShip} at {x + 1},{y + 1}!");
+                    Console.WriteLine($"\nBOOM! Enenmy has hit a/an {hitShip} at {x + 1},{y + 1}!");
                     shotChecked = true;
                     Console.ResetColor();
                     Console.ReadKey();
@@ -149,7 +149,7 @@ namespace ClassicGameClient
                 while (intXChecker == false)
                 {
                     ShowBSField(attackField);
-                    Console.Write("Where on the x axis, do you wanna hit? (1 -> 10): ");
+                    Console.Write("\nWhere on the x axis, do you wanna hit? (1 -> 10): ");
                     intXChecker = int.TryParse(Console.ReadLine().Trim(), out x);
                     if (intXChecker == true && x < 11 && x > 0)
                     {
@@ -167,7 +167,7 @@ namespace ClassicGameClient
                 while (intYChecker == false)
                 {
                     ShowBSField(attackField);
-                    Console.Write("Where on the Y axis, do you wanna hit? (1 -> 10): ");
+                    Console.Write("\nWhere on the Y axis, do you wanna hit? (1 -> 10): ");
                     intYChecker = int.TryParse(Console.ReadLine().Trim(), out y);
                     if (intYChecker == true && y < 11 && y > 0)
                     {
@@ -191,7 +191,7 @@ namespace ClassicGameClient
                     checkedShot = true;
                     ShowBSField(attackField);
                     Color(ConsoleColor.Blue);
-                    Console.WriteLine("SPLASH! You hit the water!");
+                    Console.WriteLine("\nSPLASH! You hit the water!");
                     Console.ReadKey();
                     Console.ResetColor();
                     Console.Clear();
@@ -199,7 +199,7 @@ namespace ClassicGameClient
                 }
                 else if (enemyField[x, y] == (int)BattleshipLogistics.Bombed)
                 {
-                    Console.WriteLine("The place you chose has already been hit... try again!");
+                    Console.WriteLine("\nThe place you chose has already been hit... try again!");
                     intXChecker = false;
                     intYChecker = false;
                     Console.ReadKey();
@@ -214,7 +214,7 @@ namespace ClassicGameClient
                     attackField[x, y] = 6;
                     ShowBSField(attackField);
                     Color(ConsoleColor.Red);
-                    Console.WriteLine($"BOOM! You hit a/an {shipName}!");
+                    Console.WriteLine($"\nBOOM! You hit a/an {shipName}!");
                     Console.ReadKey();
                     Console.ResetColor();
                     Console.Clear();
@@ -228,12 +228,20 @@ namespace ClassicGameClient
         /// <param name="field"></param>
         private static void ShowBSField(int[,] field) //
         {
+            Console.Write("    ");
+            for (int i = 0; i < field.GetLength(0); i++)
+            {
+                Console.Write("     ");
+            }
+            Color(ConsoleColor.DarkRed);
+            Console.Write("  X:\n");
+            Console.ResetColor();
             Console.Write("   +");
             for (int i = 0; i < field.GetLength(0); i++)
             {
                 Console.Write("----+");
             }
-            Console.Write(" X:\n");
+            Console.Write("\n");
             for (int x = 0; x < field.GetLength(0); x++)
             {
                 Console.Write("   |");
@@ -286,7 +294,10 @@ namespace ClassicGameClient
                     }
                     Console.Write("|");
                 }
-                Console.Write($"  {x + 1} \n   |");
+                Color(ConsoleColor.Red);
+                Console.Write($"  {x + 1}");
+                Console.ResetColor();
+                Console.Write("\n   |");
                 for (int y = 0; y < field.GetLength(1); y++)
                 {
                     switch (field[x, y])
@@ -340,7 +351,11 @@ namespace ClassicGameClient
                 Console.Write("\n   +----+----+----+----+----+----+----+----+----+----+\n");
             }
             Console.WriteLine("");
-            Console.WriteLine("Y:   1    2    3    4    5    6    7    8    9    10");
+            Color(ConsoleColor.DarkRed);
+            Console.Write("Y:");
+            Color(ConsoleColor.Red);
+            Console.WriteLine("   1    2    3    4    5    6    7    8    9    10");
+            Console.ResetColor();
         }
         /// <summary>
         /// Generates a random battleship setup (Mainly used for Computer)
@@ -2641,7 +2656,7 @@ namespace ClassicGameClient
                     {
                         ShowBSField(attackField);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write("Enemy");
+                        Console.Write("\nEnemy");
                         Console.ResetColor();
                         Console.Write(" is stil alive! Game continues!");
                         Console.ReadKey();
@@ -2652,6 +2667,7 @@ namespace ClassicGameClient
                     redo:
                         ShowBSField(playerField);
                         Console.ForegroundColor = userColor;
+                        Console.WriteLine();
                         Console.Write(userName);
                         Console.ResetColor();
                         Console.Write(" has defeated The Computer! Congratulations!\nDo you wanna PLAY again or do you wanna EXIT?: ");
@@ -2740,6 +2756,7 @@ namespace ClassicGameClient
                     {
                         ShowBSField(playerField);
                         Console.ForegroundColor = userColor;
+                        Console.WriteLine();
                         Console.Write(userName);
                         Console.ResetColor();
                         Console.Write(" is still alive! Game continues!");
@@ -2750,6 +2767,7 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
+                        Console.WriteLine();
                         Console.ForegroundColor = userColor;
                         Console.Write(userName);
                         Console.ResetColor();
@@ -2812,7 +2830,7 @@ namespace ClassicGameClient
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.Write("Computer");
                                 Console.ResetColor();
-                                Console.Write(" starts next game!");
+                                Console.Write(" starts next game!\n");
                             }
                         }
                         else if (userInput == "EXIT")
@@ -2842,6 +2860,7 @@ namespace ClassicGameClient
                     if (playerAlive)
                     {
                         ShowBSField(playerField);
+                        Console.WriteLine();
                         Console.ForegroundColor = userColor;
                         Console.Write(userName);
                         Console.ResetColor();
@@ -2853,6 +2872,7 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
+                        Console.WriteLine();
                         Console.ForegroundColor = userColor;
                         Console.Write(userName);
                         Console.ResetColor();
@@ -2943,7 +2963,7 @@ namespace ClassicGameClient
                     {
                         ShowBSField(attackField);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write("Enemy");
+                        Console.Write("\nEnemy");
                         Console.ResetColor();
                         Console.Write(" is stil alive! Game continues!");
                         Console.ReadKey();
@@ -2953,6 +2973,7 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
+                        Console.WriteLine();
                         Console.ForegroundColor = userColor;
                         Console.Write(userName);
                         Console.ResetColor();
