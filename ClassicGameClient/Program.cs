@@ -13,7 +13,7 @@ namespace ClassicGameClient
         {
             #region Initiator
             bool appRunning = true;
-            GameState appState = GameState.Jeopardy;
+            GameState appState = GameState.MainMenu;
             while (appRunning)
             {
                 switch (appState)
@@ -2983,6 +2983,7 @@ namespace ClassicGameClient
             void AsciiScroll()
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("Recommended playing in full screen.");
                 Console.WriteLine("You may type '/quit' at any time during the game to return to the main menu.");
                 Console.ResetColor();
                 Console.WriteLine("   __________________________________");
@@ -3077,12 +3078,6 @@ namespace ClassicGameClient
                 Console.WriteLine("____|");
             }
             #endregion
-        }
-        #region Battleship
-        private static void SinkAShip(out GameState appState)
-        {
-            throw new NotImplementedException();
-            throw new NotImplementedException();
         }
         #region BattleShipGame
         /// <summary>
