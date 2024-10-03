@@ -15,7 +15,6 @@ namespace Mastermind
             byte[,] feedback = new byte[10, 4];
 
             //Intro screen
-            Console.BackgroundColor = ConsoleColor.White;
             Console.WriteLine(
                 " __        __   _                            _        \n" +
                 " \\ \\      / /__| | ___ ___  _ __ ___   ___  | |_ ___  \n" +
@@ -36,7 +35,6 @@ namespace Mastermind
             
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("Made by Thomas Mortensen\n");
-            Console.BackgroundColor = ConsoleColor.Black;
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nGreetings, I am the Codemaster and your objective is to guess the code i will come up with." +
@@ -53,7 +51,11 @@ namespace Mastermind
                 {
                     Console.Clear();
 
-                    Console.WriteLine("Mastermind tutorial:");
+                    Console.WriteLine(
+                        "  _____     _           _      _ \n" +
+                        " |_   _|  _| |_ ___ _ _(_)__ _| |\n" +
+                        "   | || || |  _/ _ \\ '_| / _` | |\n" +
+                        "   |_| \\_,_|\\__\\___/_| |_\\__,_|_|\n");
 
                     Console.WriteLine("Before the game begins, I will come up with a 4-digit code using 6 colors (the same color can appear more than once)" +
                         "\nand you have 10 turns to try and guess the code.");
@@ -110,7 +112,14 @@ namespace Mastermind
 
                 #region Display game board + Extra info
                 //Displays turn number at the top of the screen
-                Console.WriteLine($"Turn {turn}\n");
+                if (turn <= 10)
+                {
+                    Console.WriteLine($"Turn {turn}\n");
+                }
+                else
+                {
+                    Console.WriteLine("The end!\n");
+                }
 
                 for (byte x = 0; x < gameBoard.GetLength(0); x++)
                 {
