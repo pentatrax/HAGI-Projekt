@@ -2604,7 +2604,7 @@ namespace ClassicGameClient
             Console.WriteLine("Made by Thomas Mortensen\n");
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\nGreetings, I am the Codemaster and your objective is to guess the code i will come up with." +
+            Console.WriteLine("\nGreetings, I am the Codemaster and your objective is to guess the code I will come up with." +
                 "\n\nBefore we begin do you want to view the tutorial?");
 
             #region Tutorial
@@ -2816,17 +2816,12 @@ namespace ClassicGameClient
 
                     if (validGuessFormat == true)
                     {
-                        //Split whole guess (at every '-') into seperate strings and saves in splitGuess string-array
                         splitGuess = wholeGuess.Split('-');
-                        //for (int i = 0; i < splitGuess.Length; i++)
-                        //{
-                        //    splitGuess[i] = wholeGuess.Split('-')[i];
-                        //}
 
                         foreach (string color in splitGuess)
                         {
                             //Color authentication
-                            Regex availableColors = new Regex("red|r|green|g|blue|b|yellow|y|magenta|m|cyan|c");
+                            Regex availableColors = new Regex(@"\bred\b|\br\b|\bgreen\b|\bg\b|\bblue\b|\bb\b|\byellow\b|\by\b|\bmagenta\b|\bm\b|\bcyan\b|\bc\b");
                             bool validColor = availableColors.IsMatch(color);
 
                             if (validColor == true)
