@@ -368,7 +368,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 1 > 0 && enemyField[x - 1, y] == 0)
+                                if (x - 1 >= 0 && enemyField[x - 1, y] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x - 1, y] = 1;
@@ -380,7 +380,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 2:
-                                if (x + 1 < 9 && enemyField[x + 1, y] == 0)
+                                if (x + 1 <= 9 && enemyField[x + 1, y] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x + 1, y] = 1;
@@ -392,7 +392,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 3:
-                                if (y - 1 > 0 && enemyField[x, y - 1] == 0)
+                                if (y - 1 >= 0 && enemyField[x, y - 1] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x, y - 1] = 1;
@@ -404,7 +404,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 4:
-                                if (y + 1 < 9 && enemyField[x, y + 1] == 0)
+                                if (y + 1 <= 9 && enemyField[x, y + 1] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x, y + 1] = 1;
@@ -434,7 +434,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 1 > 0 && enemyField[x-1,y] == 0)
+                                if (x - 1 >= 0 && enemyField[x-1,y] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x - 1, y] = 1;
@@ -446,7 +446,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 2:
-                                if (x + 1 < 9 && enemyField[x + 1, y] == 0)
+                                if (x + 1 <= 9 && enemyField[x + 1, y] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x + 1, y] = 1;
@@ -458,7 +458,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 3:
-                                if (y - 1 > 0 && enemyField[x, y - 1] == 0)
+                                if (y - 1 >= 0 && enemyField[x, y - 1] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x , y-1] = 1;
@@ -470,7 +470,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 4:
-                                if (y + 1 < 9 && enemyField[x, y + 1] == 0)
+                                if (y + 1 <= 9 && enemyField[x, y + 1] == 0)
                                 {
                                     enemyField[x, y] = 1;
                                     enemyField[x, y + 1] = 1;
@@ -500,7 +500,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 2 > 0 && enemyField[x - 1, y] == 0 && enemyField[x-2, y] == 0)
+                                if (x - 2 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x-2, y] == 0)
                                 {
                                     enemyField[x, y] = 2;
                                     enemyField[x - 1, y] = 2;
@@ -513,7 +513,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 2:
-                                if (x + 2 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
+                                if (x + 2 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
                                 {
                                     enemyField[x, y] = 2;
                                     enemyField[x + 1, y] = 2;
@@ -526,7 +526,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 3:
-                                if (y - 2 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
+                                if (y - 2 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
                                 {
                                     enemyField[x, y] = 2;
                                     enemyField[x, y - 1] = 2;
@@ -539,7 +539,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 4:
-                                if (y + 2 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
+                                if (y + 2 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
                                 {
                                     enemyField[x, y] = 2;
                                     enemyField[x, y + 1] = 2;
@@ -570,7 +570,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 2 > 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0)
+                                if (x - 2 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0)
                                 {
                                     enemyField[x, y] = 3;
                                     enemyField[x - 1, y] = 3;
@@ -583,7 +583,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 2:
-                                if (x + 2 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
+                                if (x + 2 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
                                 {
                                     enemyField[x, y] = 3;
                                     enemyField[x + 1, y] = 3;
@@ -596,7 +596,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 3:
-                                if (y - 2 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
+                                if (y - 2 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
                                 {
                                     enemyField[x, y] = 3;
                                     enemyField[x, y - 1] = 3;
@@ -609,7 +609,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 4:
-                                if (y + 2 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
+                                if (y + 2 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
                                 {
                                     enemyField[x, y] = 3;
                                     enemyField[x, y + 1] = 3;
@@ -640,7 +640,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 3 > 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0)
+                                if (x - 3 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0)
                                 {
                                     enemyField[x, y] = 4;
                                     enemyField[x - 1, y] = 4;
@@ -654,7 +654,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 2:
-                                if (x + 3 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0)
+                                if (x + 3 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0)
                                 {
                                     enemyField[x, y] = 4;
                                     enemyField[x + 1, y] = 4;
@@ -668,7 +668,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 3:
-                                if (y - 3 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0)
+                                if (y - 3 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0)
                                 {
                                     enemyField[x, y] = 4;
                                     enemyField[x, y - 1] = 4;
@@ -682,7 +682,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 4:
-                                if (y + 3 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0)
+                                if (y + 3 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0)
                                 {
                                     enemyField[x, y] = 4;
                                     enemyField[x, y + 1] = 4;
@@ -714,7 +714,7 @@ namespace ClassicGameClient
                         switch (direction)
                         {
                             case 1:
-                                if (x - 4 > 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0 && enemyField[x - 4, y] == 0)
+                                if (x - 4 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0 && enemyField[x - 4, y] == 0)
                                 {
                                     enemyField[x, y] = 5;
                                     enemyField[x - 1, y] = 5;
@@ -729,7 +729,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 2:
-                                if (x + 4 < 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0 && enemyField[x + 4, y] == 0)
+                                if (x + 4 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0 && enemyField[x + 4, y] == 0)
                                 {
                                     enemyField[x, y] = 5;
                                     enemyField[x + 1, y] = 5;
@@ -744,7 +744,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 3:
-                                if (y - 4 > 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
+                                if (y - 4 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
                                 {
                                     enemyField[x, y] = 5;
                                     enemyField[x, y - 1] = 5;
@@ -759,7 +759,7 @@ namespace ClassicGameClient
                                     goto retry;
                                 }
                             case 4:
-                                if (y + 4 < 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
+                                if (y + 4 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
                                 {
                                     enemyField[x, y] = 5;
                                     enemyField[x, y + 1] = 5;
@@ -1686,20 +1686,59 @@ namespace ClassicGameClient
 
             return (!errorHappened) ? temp : board;
         }
+        #region Main Menu
+        /// <summary>
+        /// The main menu that allows transference between the different games through the change of GameState (An enum)
+        /// </summary>
+        /// <param name="gameState"></param>
+        /// <param name="appRunning"></param>
         private static void MainMenu(out GameState gameState, out bool appRunning)
         {
+            Console.Clear();
             appRunning = true;
             gameState = GameState.MainMenu;
             while (true)
             {
-
-                Console.WriteLine("1 for Chess");
-                Console.WriteLine("2 for MasterMind");
-                Console.WriteLine("3 for Battleship");
-                Console.WriteLine("4 for Jeopardy");
-                Console.WriteLine("5 to exit program");
-                Console.Write("What game do you wanna play?: ");
-                if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 6 && choice > 0)
+                Log(" _______  _        _______  _______  _______ _________ _______    _______  _______  _______  _______  _______ \r\n(  ____ \\( \\      (  ___  )(  ____ \\(  ____ \\\\__   __/(  ____ \\  (  ____ \\(  ___  )(       )(  ____ \\(  ____ \\\r\n| (    \\/| (      | (   ) || (    \\/| (    \\/   ) (   | (    \\/  | (    \\/| (   ) || () () || (    \\/| (    \\/\r\n| |      | |      | (___) || (_____ | (_____    | |   | |        | |      | (___) || || || || (__    | (_____ \r\n| |      | |      |  ___  |(_____  )(_____  )   | |   | |        | | ____ |  ___  || |(_)| ||  __)   (_____  )\r\n| |      | |      | (   ) |      ) |      ) |   | |   | |        | | \\_  )| (   ) || |   | || (            ) |\r\n| (____/\\| (____/\\| )   ( |/\\____) |/\\____) |___) (___| (____/\\  | (___) || )   ( || )   ( || (____/\\/\\____) |\r\n(_______/(_______/|/     \\|\\_______)\\_______)\\_______/(_______/  (_______)|/     \\||/     \\|(_______/\\_______)\r\n                                                                                                              \n", ConsoleColor.DarkGreen);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("1");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Chess\n");               
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("2");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Mastermind\n");                
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("3");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Battleship\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("4");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Jeopardy\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("5");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Credits\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("6");
+                Console.ResetColor();
+                Console.Write(" to ");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write("Exit program\n");
+                Console.ResetColor();
+                Console.Write("So what do you wanna do?: ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 7 && choice > 0)
                 {
                     switch (choice)
                     {
@@ -1720,6 +1759,27 @@ namespace ClassicGameClient
                             Console.Clear();
                             return;
                         case 5:
+                            Console.Clear();
+                            Console.Write("The creators of the different game are as following:\nChess made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Philip Nord Nielsen\n");
+                            Console.ResetColor();
+                            Console.Write("Mastermind made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Thomas Mortensen\n");
+                            Console.ResetColor();
+                            Console.Write("Battleship made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Lasse Handberg Gohlke\n");
+                            Console.ResetColor();
+                            Console.Write("Jeopardy made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Silas Megård Opstrup\n");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            break;
+                        case 6:
                             appRunning = false;
                             Console.Clear();
                             return;
@@ -1728,14 +1788,13 @@ namespace ClassicGameClient
                 }
                 else
                 {
-                    Log("Invalid number or Not a number\n", ConsoleColor.DarkRed);
+                    Log("\nInvalid number or Not a number", ConsoleColor.DarkRed);
                     Console.ReadKey();
                     Console.Clear();
                 }
             }
-
-
         }
+        #endregion
         private static void Chess(out GameState gameState)
         {
             ChessPieces GetChessPiece(string setup, int index, bool isPlayerChessPieces)
@@ -1885,7 +1944,7 @@ namespace ClassicGameClient
             string errorMsg = "";
             int boardSize = 8;
             byte[,] gameBoard = new byte[boardSize, boardSize];
-            bool inGame = false;
+            bool inGame = true;
             string playerInput = "";
                 while (inGame)
                 {
@@ -1905,6 +1964,7 @@ namespace ClassicGameClient
                                 break;
                             case "quit":
                                 errorMsg = "";
+                            gameState = GameState.MainMenu;
                                 inGame = false;
                                 break;
                             default:
@@ -2019,13 +2079,19 @@ namespace ClassicGameClient
             int playerInitiativ = rnd.Next(1, 3);
             if (playerInitiativ == 1)
             {
-                Console.WriteLine("Player starts!");
+                Console.ForegroundColor = userColor;
+                Console.Write(userName);
+                Console.ResetColor();
+                Console.Write(" starts!");
                 Console.ReadKey();
                 Console.Clear();
             }
             else
             {
-                Console.WriteLine("Computer starts!");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("Computer");
+                Console.ResetColor();
+                Console.Write(" starts!");
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -2038,7 +2104,10 @@ namespace ClassicGameClient
                     if (enemyAlive)
                     {
                         ShowBSField(attackField);
-                        Console.WriteLine("Enemy is stil alive! Game continues!");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("Enemy");
+                        Console.ResetColor();
+                        Console.Write(" is stil alive! Game continues!");
                         Console.ReadKey();
                         Console.Clear();
                     }
@@ -2046,7 +2115,9 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
-                        Log(userName, userColor);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
                         Console.Write(" has defeated The Computer! Congratulations!\nDo you wanna PLAY again or do you wanna EXIT?: ");
                         string userInput = Console.ReadLine().Trim().ToUpper();
                         if (userInput == "PLAY")
@@ -2095,11 +2166,17 @@ namespace ClassicGameClient
                             playerInitiativ = rnd.Next(1, 3);
                             if (playerInitiativ == 1)
                             {
-                                Console.WriteLine("Player starts next game!");
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
                             }
                             else
                             {
-                                Console.WriteLine("Computer starts next game!");
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
                             }
                         }
                         else if (userInput == "EXIT")
@@ -2126,7 +2203,10 @@ namespace ClassicGameClient
                     if (playerAlive)
                     {
                         ShowBSField(playerField);
-                        Console.WriteLine("Player is still alive! Game continues!");
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" is still alive! Game continues!");
                         Console.ReadKey();
                         Console.Clear();
                     }
@@ -2134,7 +2214,9 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
-                        Log(userName, userColor);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
                         Console.Write(" has been defeated! Better luck next time!\nDo you wanna PLAY again or do you wanna EXIT?: ");
                         string userInput = Console.ReadLine().Trim().ToUpper();
                         if (userInput == "PLAY")
@@ -2184,11 +2266,17 @@ namespace ClassicGameClient
                             playerInitiativ = rnd.Next(1, 3);
                             if (playerInitiativ == 1)
                             {
-                                Console.WriteLine("Player starts next game!");
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
                             }
                             else
                             {
-                                Console.WriteLine("Computer starts next game!");
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!");
                             }
                         }
                         else if (userInput == "EXIT")
@@ -2218,7 +2306,10 @@ namespace ClassicGameClient
                     if (playerAlive)
                     {
                         ShowBSField(playerField);
-                        Console.WriteLine("Player is still alive! Game continues!");
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" is still alive! Game continues!");
                         Console.ReadKey();
                         Console.Clear();
                     }
@@ -2226,7 +2317,9 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
-                        Log(userName, userColor);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
                         Console.Write(" has been defeated! Better luck next time!\nDo you wanna PLAY again or do you wanna EXIT?: ");
                         string userInput = Console.ReadLine().Trim().ToUpper();
                         if (userInput == "PLAY")
@@ -2276,11 +2369,17 @@ namespace ClassicGameClient
                             playerInitiativ = rnd.Next(1, 3);
                             if (playerInitiativ == 1)
                             {
-                                Console.WriteLine("Player starts next game!");
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
                             }
                             else
                             {
-                                Console.WriteLine("Computer starts next game!");
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
                             }
                         }
                         else if (userInput == "EXIT")
@@ -2307,7 +2406,10 @@ namespace ClassicGameClient
                     if (enemyAlive)
                     {
                         ShowBSField(attackField);
-                        Console.WriteLine("Enemy is stil alive! Game continues!");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("Enemy");
+                        Console.ResetColor();
+                        Console.Write(" is stil alive! Game continues!");
                         Console.ReadKey();
                         Console.Clear();
                     }
@@ -2315,7 +2417,9 @@ namespace ClassicGameClient
                     {
                     redo:
                         ShowBSField(playerField);
-                        Log(userName, userColor);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
                         Console.Write(" has defeated The Computer! Congratulations!\nDo you wanna PLAY again or do you wanna EXIT?: ");
                         string userInput = Console.ReadLine().Trim().ToUpper();
                         if (userInput == "PLAY")
@@ -2364,11 +2468,17 @@ namespace ClassicGameClient
                             playerInitiativ = rnd.Next(1, 3);
                             if (playerInitiativ == 1)
                             {
-                                Console.WriteLine("Player starts next game!");
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write("Player starts next game!\n");
                             }
                             else
                             {
-                                Console.WriteLine("Computer starts next game!");
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!");
                             }
                         }
                         else if (userInput == "EXIT")
@@ -2394,7 +2504,15 @@ namespace ClassicGameClient
                 if (enemyAlive && playerAlive)
                 {
                 redo:
-                    Console.Write("Both sides are still alive. Do you wanna continue playing? PLAY or EXIT: ");
+                    Console.Write("Both sides are still alive. Do you wanna continue playing?\nWrite ");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("PLAY");
+                    Console.ResetColor();
+                    Console.Write(" or press enter without writing anything to continue playing! Write ");
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("EXIT");
+                    Console.ResetColor();
+                    Console.Write(" to end the game: ");
                     string userInput = Console.ReadLine().Trim().ToUpper();
                     if (userInput == "PLAY" || userInput == "")
                     {
