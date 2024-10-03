@@ -352,22 +352,23 @@ namespace ClassicGameClient
 
             string[,] questionsArray = new string[5,5]
             {
-                {"Question A1", "Question A2", "Question A3", "Question A4", "Question A5"},
-                {"Question B1", "Question B2", "Question B3", "Question B4", "Question B5"},
-                {"Question C1", "Question C2", "Question C3", "Question C4", "Question C5"},
-                {"Question D1", "Question D2", "Question D3", "Question D4", "Question D5"},
-                {"Question E1", "Question E2", "Question E3", "Question E4", "Question E5"}
+                {"The first name of Germany's dictator during World War 2.", "A flat, round Italian food that is generally served with cheese, tomato and a variety of other toppings.", "This band is popular for hits such as \"Mama Mia\" and \"Dancing Queen\".", "Tech A4", "A Chinese social media platform that is currently popular for sharing and creating short videos."},
+                {"The last name of the man who directed the Manhattan Project. He is said to be the \"father of the atomic bomb\".", "This fruit is associated with the discovery of gravity when it fell and hit Isaac Newton in the head.", "Real name Tim Bergling, this Swedish DJ goes by this artist name.", "Tech B4", "A frog muppet who is commonly shown in a variety of internet memes."},
+                {"The Declaration of Independence was signed during this year.", "The name of a celebrity chef who is famous for his aggressive behaviour towards other chefs which he deems bad at cooking.", "This musician is well known for his song that is commonly used to trick people online into listening to it.", "Tech C4", "Created in June 2012, this social media platform became popular for sharing and creating short, comedic videos."},
+                {"This female aviation pioneer disappeared over the Pacific Ocean on her journey to become the first female pilot to circumnavigate the world.", "Beside sushi, this is one of Japan's most popular and globally known foods.", "This term refers to the fact that an unusual amount of musicians have all died at the same specific age.", "Tech D4", "This song and music video is known for being re-created both audibly and visually in unusual ways, often using tools that are not designed for it."},
+                {"This peace contract written by \"The big three\" was signed in June 1919 and played a key role in ending World War 1.", "The popular fast-food, French fries, originates from this country.", "First and last name of the original lead singer of Linkin Park.", "Tech E4", "This videogame is commonly referred to in the question \"But can it run ...\" due to its high hardware requirements for its time."}
             };
 
             string[,] answersArray =
             {
-                {"Answer A1", "Answer A2", "Answer A3", "Answer A4", "Answer A5"},
-                {"Answer B1", "Answer B2", "Answer B3", "Answer B4", "Answer B5"},
-                {"Answer C1", "Answer C2", "Answer C3", "Answer C4", "Answer C5"},
-                {"Answer D1", "Answer D2", "Answer D3", "Answer D4", "Answer D5"},
-                {"Answer E1", "Answer E2", "Answer E3", "Answer E4", "Answer E5"}
+                {"Adolf", "Pizza", "ABBA", "Tech A4", "TikTok"},
+                {"Oppenheimer", "Apple", "Avicii", "Tech B4", "Pepe"},
+                {"1776", "Gordon Ramsay", "Rick Astley", "Tech C4", "Vine"},
+                {"Amelia Earhart", "Ramen", "27 Club", "Tech D4", "Bad Apple"},
+                {"Treaty of Versaille", "Belgium", "Chester Bennington", "Tech E4", "Crysis"}
             };
 
+            string[] categories = {"History", "Food", "Music", "Tech", "Memes"};
             string[] playerNames = { };
             int[] playerScores = { };
             int currentPlayer = 0;
@@ -516,10 +517,15 @@ namespace ClassicGameClient
             #region WriteBoard
             void WriteBoard(bool proceed = true)
             {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Topics:   History, Food, Music,");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("                                       __________________X_______________");
-                Console.WriteLine("                                      |    ");
-                Console.WriteLine("                                      |    +---+ +---+ +---+ +---+ +---+");
+                Console.WriteLine("        _______________________X____________________");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("              Tech, Memes");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("             |     HIS 1   FD  2   MUS 3   TCH 4   ME  5");
+                Console.WriteLine("                                      |    +-----+ +-----+ +-----+ +-----+ +-----+");
                 for (int x = 0; x < questionsArray.GetLength(0); x++)
                 {
                     if (x == 2)
@@ -534,19 +540,19 @@ namespace ClassicGameClient
                     {
                         if (pointsArray[x, y] != 0)
                         {
-                            Console.Write($"|");
+                            Console.Write($"| ");
                             Console.ForegroundColor = ConsoleColor.White;
                             Console.Write(pointsArray[x, y]);
                             Console.ForegroundColor = ConsoleColor.DarkGray;
-                            Console.Write("| ");
+                            Console.Write(" | ");
                         }
                         else
                         {
-                            Console.Write($"|   | ");
+                            Console.Write($"|     | ");
                         }
                     }
                     Console.WriteLine();
-                    Console.WriteLine("                                      |    +---+ +---+ +---+ +---+ +---+");
+                    Console.WriteLine("                                      |    +-----+ +-----+ +-----+ +-----+ +-----+");
                 }
                 Console.ResetColor();
                 Console.WriteLine();
@@ -561,7 +567,7 @@ namespace ClassicGameClient
                         Console.WriteLine($"   {playerNames[x]}: {playerScores[x]} points");
                     }
                 }
-                Console.WriteLine("                                      Which question do you want to choose?   ");
+                Console.WriteLine("                                            Which question do you want to choose?   ");
                 if (proceed == true)
                 {
                     SelectQuestion();
@@ -580,7 +586,7 @@ namespace ClassicGameClient
                 string stringChoiceX;
                 string stringChoiceY;
                 Console.WriteLine();
-                Console.Write("                                      X axis: ");
+                Console.Write("                                            Category: ");
                 while (quit == false)
                 {
                     stringChoiceX = (Console.ReadLine());
@@ -599,28 +605,35 @@ namespace ClassicGameClient
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine($"                                 Not within range. Please select between 1 and {pointsArray.GetLength(0)}.");
+                            Console.WriteLine($"                                    Not within range. Please select between 1 and {pointsArray.GetLength(0)}.");
                             Console.ResetColor();
                             Console.ReadKey();
                             Console.Clear();
                             WriteBoard(false);
                             Console.WriteLine();
-                            Console.Write("                                      X axis: ");
+                            Console.Write("                                            Category: ");
                         }
                     }
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("                               Error: Input is not valid a number. Please try again.");
+                        Console.WriteLine("                                  Error: Input is not valid a number. Please try again.");
+                        Console.WriteLine("                 Note: Category is selected by entering the category's corresponding number. Fx '2' for Food.");
                         Console.ResetColor();
                         Console.ReadKey();
                         Console.Clear();
                         WriteBoard(false);
                         Console.WriteLine();
-                        Console.Write("                                      X axis: ");
+                        Console.Write("                                            Category: ");
                     }
                 }
-                Console.Write("                                      Y axis: ");
+
+                Console.Clear();
+                WriteBoard(false);
+                Console.WriteLine();
+                Console.WriteLine($"                                            Category: {categories[intChoiceX]}");
+                Console.Write("                                            Points: ");
+
                 while (quit == false)
                 {
                     stringChoiceY = (Console.ReadLine());
@@ -631,7 +644,8 @@ namespace ClassicGameClient
                     }
                     if (int.TryParse(stringChoiceY, out intChoiceY))
                     {
-                        if (intChoiceY >= 1 && intChoiceY <= (pointsArray.Length / pointsArray.GetLength(0)))
+                        //if (intChoiceY >= 1 && intChoiceY <= (pointsArray.Length / pointsArray.GetLength(0)))
+                        if (intChoiceY == 100 || intChoiceY == 200 || intChoiceY == 300 || intChoiceY == 400 || intChoiceY == 500)
                         {
                             intChoiceY--;
                             break;
@@ -639,29 +653,30 @@ namespace ClassicGameClient
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine($"                                 Not within range. Please select between 1 and {pointsArray.Length / pointsArray.GetLength(0)}.");
+                            Console.WriteLine("                                 Not within range. Please select 100, 200, 300, 400 or 500.");
                             Console.ResetColor();
                             Console.ReadKey();
                             Console.Clear();
                             WriteBoard(false);
                             Console.WriteLine();
-                            Console.WriteLine($"                                      X axis: {intChoiceX + 1}");
-                            Console.Write("                                      Y axis: ");
+                            Console.WriteLine($"                                            Category: {categories[intChoiceX]}");
+                            Console.Write("                                            Points: ");
                         }
                     }
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("                               Error: Input is not valid a number. Please try again.");
+                        Console.WriteLine("                                  Error: Input is not valid a number. Please try again.");
                         Console.ResetColor();
                         Console.ReadKey();
                         Console.Clear();
                         WriteBoard(false);
                         Console.WriteLine();
-                        Console.WriteLine($"                                      X axis: {intChoiceX + 1}");
-                        Console.Write("                                      Y axis: ");
+                        Console.WriteLine($"                                            Category: {categories[intChoiceX]}");
+                        Console.Write("                                            Points: ");
                     }
                 }
+                intChoiceY /= 100;
                 if ((pointsArray[intChoiceY, intChoiceX] == 0) && (quit == false))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -684,7 +699,9 @@ namespace ClassicGameClient
             #region WriteQuestion
             void WriteQuestion()
             {
-                Console.WriteLine(questionsArray[intChoiceY, intChoiceX]);
+                //Console.WriteLine(questionsArray[intChoiceY, intChoiceX]);
+                QuestionFormat(questionsArray[intChoiceY, intChoiceX], pointsArray[intChoiceY, intChoiceX]);
+                
                 Console.WriteLine();
                 if (currentGuesses != 0)
                 {
@@ -713,9 +730,11 @@ namespace ClassicGameClient
                             quit = true;
                             break;
                         }
-                        if (answer == answersArray[intChoiceY, intChoiceX].ToLower())
+                        if (answer.Contains(answersArray[intChoiceY, intChoiceX].ToLower()))
                         {
-                            Console.WriteLine($"Correct! Awarded {pointsArray[intChoiceY, intChoiceX]} points to {playerNames[currentPlayer]}.");
+                            Console.WriteLine();
+                            Console.WriteLine($"Correct! The answer was {answersArray[intChoiceY, intChoiceX]}.");
+                            Console.WriteLine($"Awarded {pointsArray[intChoiceY, intChoiceX]} points to {playerNames[currentPlayer]}.");
                             playerScores[currentPlayer] += pointsArray[intChoiceY, intChoiceX];
                             pointsArray[intChoiceY, intChoiceX] = 0;
                             if (currentPlayer < (playerNames.GetLength(0) - 1))
@@ -734,7 +753,10 @@ namespace ClassicGameClient
                         {
                             Console.WriteLine("Wrong answer!");
                             currentGuesses--;
-                            pointsArray[intChoiceY, intChoiceX] = 0;
+                            if (currentGuesses == 0)
+                            {
+                                pointsArray[intChoiceY, intChoiceX] = 0;
+                            }
                             Console.ReadKey();
                             Console.Clear();
                             WriteQuestion();
@@ -802,6 +824,60 @@ namespace ClassicGameClient
                 Console.WriteLine();
             }
 
+            #endregion
+
+            #region QuestionFormat
+            void QuestionFormat(string x, int y)
+            {
+                Console.Write(" ____");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("____ ");
+
+                Console.Write("|  __");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("__  |");
+
+                Console.Write("| |  ");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write(" ");
+                }
+                Console.WriteLine("  | |");
+
+
+                Console.WriteLine($"| |  {x}  | |");
+                Console.Write($"| |     - {y} points");
+                for (int i = 0; i < x.Length-15; i++)
+                {
+                    Console.Write(" ");
+                }
+                if (y == 0)
+                {
+                    Console.Write("  ");
+                }
+                Console.WriteLine("  | |");
+
+
+                Console.Write("| |__");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("__| |");
+
+                Console.Write("|____");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("____|");
+            }
             #endregion
         }
         #region Battleship
