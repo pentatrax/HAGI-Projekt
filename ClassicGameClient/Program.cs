@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -61,6 +63,19 @@ namespace ClassicGameClient
             BlackHorse = 11,
             BlackRook = 12,
         }
+        #region BattleshipEnums
+        //Enums for the Battleship Game
+        private enum BattleshipLogistics
+        {
+            Water = 0,
+            PatrolBoat = 1,
+            Submarine = 2,
+            Destroyer = 3,
+            Battleship = 4,
+            Carrier = 5,
+            Bombed = 6,
+        }
+        #endregion
         private static void Log(Object input)
         {
             Console.Write(input);
@@ -79,6 +94,1546 @@ namespace ClassicGameClient
         {
             Console.BackgroundColor = c;
         }
+        #region BattleshipFunctions
+        //Functions for Battleship Game
+        /// <summary>
+        /// Computer generated attacks to the enemy in battleships
+        /// </summary>
+        /// <param name="playerField"></param>
+        private static void BSEnemyFire(int[,] playerField)
+        {
+            bool shotChecked = false;
+            Random rnd = new Random();
+            while (shotChecked == false)
+            {
+                int x = rnd.Next(0, 10);
+                int y = rnd.Next(0, 10);
+                if (playerField[x, y] == (int)BattleshipLogistics.Bombed)
+                {
+                    continue;
+                }
+                else if (playerField[x, y] == (int)BattleshipLogistics.Water)
+                {
+                    playerField[x, y] = 6;
+                    ShowBSField(playerField);
+                    Color(ConsoleColor.Blue);
+                    Console.WriteLine($"Splash! Enemy hit water at {x + 1},{y + 1}!");
+                    shotChecked = true;
+                    Console.ResetColor();
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                else
+                {
+                    string hitShip = Enum.GetName(typeof(BattleshipLogistics), playerField[x, y]);
+                    playerField[x, y] = 6;
+                    ShowBSField(playerField);
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine($"BOOM! Enenmy has hit a/an {hitShip} at {x + 1},{y + 1}!");
+                    shotChecked = true;
+                    Console.ResetColor();
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+        }
+        /// <summary>
+        /// Using user input to attack an enemy in Battleship
+        /// </summary>
+        /// <param name="enemyField"></param>
+        /// <param name="attackField"></param>
+        private static void BSPlayerFire(int[,] enemyField, int[,] attackField) //
+        {
+            bool checkedShot = false;
+            bool intXChecker = false;
+            bool intYChecker = false;
+            int x = 0;
+            int y = 0;
+            while (checkedShot == false)
+            {
+                while (intXChecker == false)
+                {
+                    ShowBSField(attackField);
+                    Console.Write("Where on the x axis, do you wanna hit? (1 -> 10): ");
+                    intXChecker = int.TryParse(Console.ReadLine().Trim(), out x);
+                    if (intXChecker == true && x < 11 && x > 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong number or not a number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        continue;
+                    }
+                }
+                Console.Clear();
+                while (intYChecker == false)
+                {
+                    ShowBSField(attackField);
+                    Console.Write("Where on the Y axis, do you wanna hit? (1 -> 10): ");
+                    intYChecker = int.TryParse(Console.ReadLine().Trim(), out y);
+                    if (intYChecker == true && y < 11 && y > 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong number or not a number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        continue;
+                    }
+                }
+                Console.Clear();
+                y -= 1;
+                x -= 1;
+                if (enemyField[x, y] == (int)BattleshipLogistics.Water)
+                {
+                    enemyField[x, y] = 6;
+                    attackField[x, y] = 6;
+                    checkedShot = true;
+                    ShowBSField(attackField);
+                    Color(ConsoleColor.Blue);
+                    Console.WriteLine("SPLASH! You hit the water!");
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                    break;
+                }
+                else if (enemyField[x, y] == (int)BattleshipLogistics.Bombed)
+                {
+                    Console.WriteLine("The place you chose has already been hit... try again!");
+                    intXChecker = false;
+                    intYChecker = false;
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+                else
+                {
+                    checkedShot = true;
+                    string shipName = Enum.GetName(typeof(BattleshipLogistics), enemyField[x, y]);
+                    enemyField[x, y] = 6;
+                    attackField[x, y] = 6;
+                    ShowBSField(attackField);
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine($"BOOM! You hit a/an {shipName}!");
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                    break;
+                }
+            }
+        }
+        /// <summary>
+        /// Show the battlefield with an user-friendly UI
+        /// </summary>
+        /// <param name="field"></param>
+        private static void ShowBSField(int[,] field) //
+        {
+            Console.Write("   +");
+            for (int i = 0; i < field.GetLength(0); i++)
+            {
+                Console.Write("----+");
+            }
+            Console.Write(" X:\n");
+            for (int x = 0; x < field.GetLength(0); x++)
+            {
+                Console.Write("   |");
+                for (int y = 0; y < field.GetLength(1); y++)
+                {
+                    switch (field[x, y])
+                    {
+                        case 0:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Blue);
+                            Console.Write("    ");
+                            Console.ResetColor();
+                            break;
+                        case 1:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Green);
+                            Console.Write("PPPP");
+                            Console.ResetColor();
+                            break;
+                        case 2:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkYellow);
+                            Console.Write("SSSS");
+                            Console.ResetColor();
+                            break;
+                        case 3:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkMagenta);
+                            Console.Write("DDDD");
+                            Console.ResetColor();
+                            break;
+                        case 4:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGreen);
+                            Console.Write("BBBB");
+                            Console.ResetColor();
+                            break;
+                        case 5:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGray);
+                            Console.Write("CCCC");
+                            Console.ResetColor();
+                            break;
+                        case 6:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Red);
+                            Console.Write("!!!!");
+                            Console.ResetColor();
+                            break;
+                    }
+                    Console.Write("|");
+                }
+                Console.Write($"  {x + 1} \n   |");
+                for (int y = 0; y < field.GetLength(1); y++)
+                {
+                    switch (field[x, y])
+                    {
+                        case 0:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Blue);
+                            Console.Write("    ");
+                            Console.ResetColor();
+                            break;
+                        case 1:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Green);
+                            Console.Write("PPPP");
+                            Console.ResetColor();
+                            break;
+                        case 2:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkYellow);
+                            Console.Write("SSSS");
+                            Console.ResetColor();
+                            break;
+                        case 3:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkMagenta);
+                            Console.Write("DDDD");
+                            Console.ResetColor();
+                            break;
+                        case 4:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGreen);
+                            Console.Write("BBBB");
+                            Console.ResetColor();
+                            break;
+                        case 5:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.DarkGray);
+                            Console.Write("CCCC");
+                            Console.ResetColor();
+                            break;
+                        case 6:
+                            Color(ConsoleColor.White);
+                            BackColor(ConsoleColor.Red);
+                            Console.Write("!!!!");
+                            Console.ResetColor();
+                            break;
+                    }
+                    Console.Write("|");
+                }
+
+                Console.Write("\n   +----+----+----+----+----+----+----+----+----+----+\n");
+            }
+            Console.WriteLine("");
+            Console.WriteLine("Y:   1    2    3    4    5    6    7    8    9    10");
+        }
+        /// <summary>
+        /// Generates a random battleship setup (Mainly used for Computer)
+        /// </summary>
+        /// <param name="enemyField"></param>
+        private static void GenerateBSEnemyField(int[,] enemyField)
+        {
+            bool placementCheck = false;
+            Random rnd = new Random();
+            while (true)
+            {
+                while (placementCheck == false)
+                {
+                retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 1 >= 0 && enemyField[x - 1, y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x - 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 1 <= 9 && enemyField[x + 1, y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x + 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 1 >= 0 && enemyField[x, y - 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x, y - 1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 1 <= 9 && enemyField[x, y + 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x, y + 1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x,y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 1 >= 0 && enemyField[x-1,y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x - 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 1 <= 9 && enemyField[x + 1, y] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x + 1, y] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 1 >= 0 && enemyField[x, y - 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x , y-1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 1 <= 9 && enemyField[x, y + 1] == 0)
+                                {
+                                    enemyField[x, y] = 1;
+                                    enemyField[x, y + 1] = 1;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 2 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x-2, y] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x - 1, y] = 2;
+                                    enemyField[x - 2, y] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 2 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x + 1, y] = 2;
+                                    enemyField[x + 2, y] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 2 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x, y - 1] = 2;
+                                    enemyField[x, y - 2] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 2 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
+                                {
+                                    enemyField[x, y] = 2;
+                                    enemyField[x, y + 1] = 2;
+                                    enemyField[x, y + 2] = 2;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 2 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x - 1, y] = 3;
+                                    enemyField[x - 2, y] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 2 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x + 1, y] = 3;
+                                    enemyField[x + 2, y] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 2 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x, y - 1] = 3;
+                                    enemyField[x, y - 2] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 2 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0)
+                                {
+                                    enemyField[x, y] = 3;
+                                    enemyField[x, y + 1] = 3;
+                                    enemyField[x, y + 2] = 3;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 3 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x - 1, y] = 4;
+                                    enemyField[x - 2, y] = 4;
+                                    enemyField[x - 3, y] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 3 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x + 1, y] = 4;
+                                    enemyField[x + 2, y] = 4;
+                                    enemyField[x + 3, y] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 3 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x, y - 1] = 4;
+                                    enemyField[x, y - 2] = 4;
+                                    enemyField[x, y - 3] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 3 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0)
+                                {
+                                    enemyField[x, y] = 4;
+                                    enemyField[x, y + 1] = 4;
+                                    enemyField[x, y + 2] = 4;
+                                    enemyField[x, y + 3] = 4;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                while (placementCheck == false)
+                {
+                    retry:
+                    int x = rnd.Next(0, 10);
+                    int y = rnd.Next(0, 10);
+                    if (enemyField[x, y] == 0)
+                    {
+                        int direction = rnd.Next(1, 4);
+                        switch (direction)
+                        {
+                            case 1:
+                                if (x - 4 >= 0 && enemyField[x - 1, y] == 0 && enemyField[x - 2, y] == 0 && enemyField[x - 3, y] == 0 && enemyField[x - 4, y] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x - 1, y] = 5;
+                                    enemyField[x - 2, y] = 5;
+                                    enemyField[x - 3, y] = 5;
+                                    enemyField[x - 4, y] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 2:
+                                if (x + 4 <= 9 && enemyField[x + 1, y] == 0 && enemyField[x + 2, y] == 0 && enemyField[x + 3, y] == 0 && enemyField[x + 4, y] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x + 1, y] = 5;
+                                    enemyField[x + 2, y] = 5;
+                                    enemyField[x + 3, y] = 5;
+                                    enemyField[x + 4, y] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 3:
+                                if (y - 4 >= 0 && enemyField[x, y - 1] == 0 && enemyField[x, y - 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x, y - 1] = 5;
+                                    enemyField[x, y - 2] = 5;
+                                    enemyField[x, y - 3] = 5;
+                                    enemyField[x, y - 4] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                            case 4:
+                                if (y + 4 <= 9 && enemyField[x, y + 1] == 0 && enemyField[x, y + 2] == 0 && enemyField[x, y - 3] == 0 && enemyField[x, y - 4] == 0)
+                                {
+                                    enemyField[x, y] = 5;
+                                    enemyField[x, y + 1] = 5;
+                                    enemyField[x, y + 2] = 5;
+                                    enemyField[x, y + 3] = 5;
+                                    enemyField[x, y + 4] = 5;
+                                    placementCheck = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    goto retry;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        goto retry;
+                    }
+                }
+                placementCheck = false;
+                break;
+            }
+        }
+        /// <summary>
+        /// Using user input to place different boats on the battlefield in Battleship.
+        /// </summary>
+        /// <param name="playerField"></param>
+        private static void UserFieldGeneration(int[,] playerField)
+        {
+            int shipID;
+            bool placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 1;
+            retry:
+                ShowBSField(playerField);
+                Console.WriteLine("");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 1 >= 0 && playerField[x - 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x - 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 1 <= 9 && playerField[x + 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x + 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 1 >= 0 && playerField[x, y - 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y - 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 1 <= 9 && playerField[x, y + 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y + 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                                
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                    
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 1;
+            retry:
+                ShowBSField(playerField);
+                Console.WriteLine("");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 2 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 1 >= 0 && playerField[x - 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x - 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 1 <= 9 && playerField[x + 1, y] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x + 1, y] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 1 >= 0 && playerField[x, y - 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y - 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 1 <= 9 && playerField[x, y + 1] == 0)
+                                        {
+                                            playerField[x, y] = 1;
+                                            playerField[x, y + 1] = 1;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 2;
+            retry:
+                ShowBSField(playerField);
+                Console.WriteLine("");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 2 >= 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x - 1, y] = 2;
+                                            playerField[x - 2, y] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 2 <= 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x + 1, y] = 2;
+                                            playerField[x + 2, y] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 2 >= 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x, y - 1] = 2;
+                                            playerField[x, y - 2] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 2 <= 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0)
+                                        {
+                                            playerField[x, y] = 2;
+                                            playerField[x, y + 1] = 2;
+                                            playerField[x, y + 2] = 2;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 3;
+            retry:
+                ShowBSField(playerField);
+                Console.WriteLine("");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 3 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction))
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 2 >= 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x - 1, y] = 3;
+                                            playerField[x - 2, y] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 2 <= 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x + 1, y] = 3;
+                                            playerField[x + 2, y] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 2 >= 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x, y - 1] = 3;
+                                            playerField[x, y - 2] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 2 <= 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0)
+                                        {
+                                            playerField[x, y] = 3;
+                                            playerField[x, y + 1] = 3;
+                                            playerField[x, y + 2] = 3;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                    
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 4;
+            retry:
+                ShowBSField(playerField);
+                Console.WriteLine("");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0) 
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces) (1 - 10): ");
+                    if(int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 4 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction))
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 3 >= 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0 && playerField[x - 3, y] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x - 1, y] = 4;
+                                            playerField[x - 2, y] = 4;
+                                            playerField[x - 3, y] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 3 <= 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0 && playerField[x + 3, y] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x + 1, y] = 4;
+                                            playerField[x + 2, y] = 4;
+                                            playerField[x + 3, y] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 3 >= 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0 && playerField[x, y - 3] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x, y - 1] = 4;
+                                            playerField[x, y - 2] = 4;
+                                            playerField[x, y - 3] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 3 <= 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0 && playerField[x, y + 3] == 0)
+                                        {
+                                            playerField[x, y] = 4;
+                                            playerField[x, y + 1] = 4;
+                                            playerField[x, y + 2] = 4;
+                                            playerField[x, y + 3] = 4;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                
+            }
+            placementCheck = false;
+            while (placementCheck == false)
+            {
+                shipID = 5;
+            retry:
+                ShowBSField(playerField);
+                Console.WriteLine("");
+                Console.Write($"Which x coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces) (1 - 10): ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int x) && x < 11 && x > 0)
+                {
+                    x--;
+                    Console.Write($"Which y coordinate do you wanna place a {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces) (1 - 10): ");
+                    if (int.TryParse(Console.ReadLine().Trim(), out int y) && y < 11 && y > 0)
+                    {
+                        y--;
+                        if (playerField[x, y] == 0)
+                        {
+                            Console.WriteLine("1 for North!\n2 for South!\n3 for West\n4 for East!");
+                            Console.Write($"Which direction do you wanna go for the {Enum.GetName(typeof(BattleshipLogistics), shipID)}? (Needs 5 spaces): ");
+                            if (int.TryParse(Console.ReadLine().Trim(), out int direction) && direction < 5 && direction > 0)
+                            {
+                                switch (direction)
+                                {
+                                    case 1:
+                                        if (x - 4 >= 0 && playerField[x - 1, y] == 0 && playerField[x - 2, y] == 0 && playerField[x - 3, y] == 0 && playerField[x - 4, y] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x - 1, y] = 5;
+                                            playerField[x - 2, y] = 5;
+                                            playerField[x - 3, y] = 5;
+                                            playerField[x - 4, y] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 2:
+                                        if (x + 4 <= 9 && playerField[x + 1, y] == 0 && playerField[x + 2, y] == 0 && playerField[x + 3, y] == 0 && playerField[x + 4, y] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x + 1, y] = 5;
+                                            playerField[x + 2, y] = 5;
+                                            playerField[x + 3, y] = 5;
+                                            playerField[x + 4, y] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 3:
+                                        if (y - 4 >= 0 && playerField[x, y - 1] == 0 && playerField[x, y - 2] == 0 && playerField[x, y - 3] == 0 && playerField[x, y - 4] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x, y - 1] = 5;
+                                            playerField[x, y - 2] = 5;
+                                            playerField[x, y - 3] = 5;
+                                            playerField[x, y - 4] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                    case 4:
+                                        if (y + 4 <= 9 && playerField[x, y + 1] == 0 && playerField[x, y + 2] == 0 && playerField[x, y + 3] == 0 && playerField[x, y + 4] == 0)
+                                        {
+                                            playerField[x, y] = 5;
+                                            playerField[x, y + 1] = 5;
+                                            playerField[x, y + 2] = 5;
+                                            playerField[x, y + 3] = 5;
+                                            playerField[x, y + 4] = 5;
+                                            placementCheck = true;
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} has been placed!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{Enum.GetName(typeof(BattleshipLogistics), shipID)} can't be placed here! Try again!");
+                                            Console.ReadKey();
+                                            Console.Clear();
+                                            goto retry;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unkown command! Try again!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                goto retry;
+                            }
+                                
+                        }
+                        else
+                        {
+                            Console.WriteLine("Something is already here! Try again!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto retry;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto retry;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Is outside the battlefield or is not an number! Try again!");
+                    Console.ReadKey();
+                    Console.Clear();
+                    goto retry;
+                }
+                Log("Final Placement:\n", ConsoleColor.DarkRed);
+                ShowBSField(playerField);
+                Console.ReadKey();
+                Console.Clear();
+                
+            }
+        }
+        /// <summary>
+        /// A boolean check to check if an player is still alive on the battlefield in Battleships.
+        /// </summary>
+        /// <param name="Field"></param>
+        /// <returns></returns>
+        private static bool IsPlayerAlive(int[,] Field)
+        {
+            bool enemyAlive = false;
+            foreach (int field in Field)
+            {
+                if (field > 0 && field < 6)
+                {
+                    enemyAlive = true;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            if (enemyAlive)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        } 
+        #endregion
         /// <summary>
         /// Translates [a1] coordinates to array coordinates.
         /// </summary>
@@ -584,6 +2139,119 @@ namespace ClassicGameClient
                     errorHappened = true;
                 }
 
+            return (!errorHappened) ? temp : board;
+        }
+        #region Main Menu
+        /// <summary>
+        /// The main menu that allows transference between the different games through the change of GameState (An enum)
+        /// </summary>
+        /// <param name="gameState"></param>
+        /// <param name="appRunning"></param>
+        private static void MainMenu(out GameState gameState, out bool appRunning)
+        {
+            Console.Clear();
+            appRunning = true;
+            gameState = GameState.MainMenu;
+            while (true)
+            {
+                Log(" _______  _        _______  _______  _______ _________ _______    _______  _______  _______  _______  _______ \r\n(  ____ \\( \\      (  ___  )(  ____ \\(  ____ \\\\__   __/(  ____ \\  (  ____ \\(  ___  )(       )(  ____ \\(  ____ \\\r\n| (    \\/| (      | (   ) || (    \\/| (    \\/   ) (   | (    \\/  | (    \\/| (   ) || () () || (    \\/| (    \\/\r\n| |      | |      | (___) || (_____ | (_____    | |   | |        | |      | (___) || || || || (__    | (_____ \r\n| |      | |      |  ___  |(_____  )(_____  )   | |   | |        | | ____ |  ___  || |(_)| ||  __)   (_____  )\r\n| |      | |      | (   ) |      ) |      ) |   | |   | |        | | \\_  )| (   ) || |   | || (            ) |\r\n| (____/\\| (____/\\| )   ( |/\\____) |/\\____) |___) (___| (____/\\  | (___) || )   ( || )   ( || (____/\\/\\____) |\r\n(_______/(_______/|/     \\|\\_______)\\_______)\\_______/(_______/  (_______)|/     \\||/     \\|(_______/\\_______)\r\n                                                                                                              \n", ConsoleColor.DarkGreen);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("1");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Chess\n");               
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("2");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Mastermind\n");                
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("3");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Battleship\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("4");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Jeopardy\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("5");
+                Console.ResetColor();
+                Console.Write(" for ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Credits\n");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("6");
+                Console.ResetColor();
+                Console.Write(" to ");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write("Exit program\n");
+                Console.ResetColor();
+                Console.Write("So what do you wanna do?: ");
+                if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 7 && choice > 0)
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            gameState = GameState.Chess;
+                            Console.Clear();
+                            return;
+                        case 2:
+                            gameState = GameState.Mastermind;
+                            Console.Clear();
+                            return;
+                        case 3:
+                            gameState = GameState.SinkAShip;
+                            Console.Clear();
+                            return;
+                        case 4:
+                            gameState = GameState.Jeopardy;
+                            Console.Clear();
+                            return;
+                        case 5:
+                            Console.Clear();
+                            Console.Write("The creators of the different game are as following:\nChess made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Philip Nord Nielsen\n");
+                            Console.ResetColor();
+                            Console.Write("Mastermind made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Thomas Mortensen\n");
+                            Console.ResetColor();
+                            Console.Write("Battleship made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Lasse Handberg Gohlke\n");
+                            Console.ResetColor();
+                            Console.Write("Jeopardy made by ");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Silas Megård Opstrup\n");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            break;
+                        case 6:
+                            appRunning = false;
+                            Console.Clear();
+                            return;
+                    }
+                    break;
+                }
+                else
+                {
+                    Log("\nInvalid number or Not a number", ConsoleColor.DarkRed);
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+        }
+        #endregion
+        private static void Chess(out GameState gameState)
+        {
                 return (!errorHappened) ? temp : board;
             }
             /// <summary>
@@ -862,10 +2530,565 @@ namespace ClassicGameClient
         {
             throw new NotImplementedException();
         }
-
-        private static void SinkAShip(out GameState appState)
+        #region BattleShipGame
+        /// <summary>
+        /// Battleships game programmed by Lasse Handberg Gohlke. (Player vs. Computer)
+        /// 
+        /// </summary>
+        /// <param name="appState"></param>
+        private static void SinkAShip(out GameState appState) // Made by Lasse Handberg Gohlke
         {
-            throw new NotImplementedException();
+            appState = GameState.Chess;
+            Random rnd = new Random();
+            int[,] playerField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
+            int[,] enemyField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
+            int[,] attackField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
+            bool gameEnd = false;
+            bool playerAlive = false;
+            bool enemyAlive = false;
+            GenerateBSEnemyField(enemyField);
+            ConsoleColor userColor = ConsoleColor.Green;
+            Color(ConsoleColor.DarkBlue);
+            Console.WriteLine("    ____          __   __   __             __     _      \r\n   / __ ) ____ _ / /_ / /_ / /___   _____ / /_   (_)____ \r\n  / __  |/ __ `// __// __// // _ \\ / ___// __ \\ / // __ \\\r\n / /_/ // /_/ // /_ / /_ / //  __/(__  )/ / / // // /_/ /\r\n/_____/ \\__,_/ \\__/ \\__//_/ \\___//____//_/ /_//_// .___/ \r\n                                                /_/      ");
+            Console.ResetColor();
+            Console.Write("Please enter your name?: ");
+            string userName = Console.ReadLine().Trim();
+            while (true)
+            {
+                Console.Write("Welcome ");
+                Color(userColor);
+                Console.Write($"{userName}");
+                Console.ResetColor();
+                Console.WriteLine("! Ready to play Battleship?");
+                Console.Write("Please write YES or NO, if you want to play Battleship?: ");
+                string answer = Console.ReadLine().Trim().ToUpper();
+                if (answer == "YES")
+                {
+                    Console.WriteLine("Well... Let's start the game! But first...");
+                redo:
+                    Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                    answer = Console.ReadLine().Trim().ToUpper();
+                    if (answer == "OWN")
+                    {
+                        Console.WriteLine("Well let's get to it!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        UserFieldGeneration(playerField);
+                        break;
+                    }
+                    else if (answer == "COMPUTER")
+                    {
+                        Console.Clear();
+                        Color(ConsoleColor.DarkRed);
+                        Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                        Console.ReadKey();
+                        GenerateBSEnemyField(playerField);
+                        Console.WriteLine("FINAL SETUP!");
+                        Console.ResetColor();
+                        ShowBSField(playerField);
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    }
+                    else
+                    {
+                        Color(ConsoleColor.Red);
+                        Console.WriteLine("Didn't understand?");
+                        Console.ReadKey();
+                        Console.ResetColor();
+                        Console.Clear();
+                        goto redo;
+                    }
+                }
+                else if (answer == "NO")
+                {
+                    appState = GameState.MainMenu;
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine("Returning to Main menu!");
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                    return;
+                }
+                else
+                {
+                    Color(ConsoleColor.Red);
+                    Console.WriteLine("Didn't understand?");
+                    Console.ReadKey();
+                    Console.ResetColor();
+                    Console.Clear();
+                }
+            }
+            int playerInitiativ = rnd.Next(1, 3);
+            if (playerInitiativ == 1)
+            {
+                Console.ForegroundColor = userColor;
+                Console.Write(userName);
+                Console.ResetColor();
+                Console.Write(" starts!");
+                Console.ReadKey();
+                Console.Clear();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("Computer");
+                Console.ResetColor();
+                Console.Write(" starts!");
+                Console.ReadKey();
+                Console.Clear();
+            }
+            while (gameEnd == false)
+            {
+                if (playerInitiativ == 1)
+                {
+                    BSPlayerFire(enemyField, attackField);
+                    enemyAlive = IsPlayerAlive(enemyField);
+                    if (enemyAlive)
+                    {
+                        ShowBSField(attackField);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("Enemy");
+                        Console.ResetColor();
+                        Console.Write(" is stil alive! Game continues!");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+                    else
+                    {
+                    redo:
+                        ShowBSField(playerField);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" has defeated The Computer! Congratulations!\nDo you wanna PLAY again or do you wanna EXIT?: ");
+                        string userInput = Console.ReadLine().Trim().ToUpper();
+                        if (userInput == "PLAY")
+                        {
+                            Console.WriteLine("Resetting the playing field!");
+                            for (int x = 0; x < enemyField.GetLength(0); x++) // Resets all the field arrays!
+                            {
+                                for (int y = 0; y < enemyField.GetLength(1); y++)
+                                {
+                                    enemyField[x, y] = 0;
+                                    playerField[x, y] = 0;
+                                    attackField[x, y] = 0;
+                                }
+                            }
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Console.Clear();
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
+                            playerInitiativ = rnd.Next(1, 3);
+                            if (playerInitiativ == 1)
+                            {
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
+                            }
+                        }
+                        else if (userInput == "EXIT")
+                        {
+                            gameEnd = true;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Returning to main menu!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Didn't understand! Try Again!");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto redo;
+                        }
+                    }
+                    BSEnemyFire(playerField);
+                    playerAlive = IsPlayerAlive(playerField);
+                    if (playerAlive)
+                    {
+                        ShowBSField(playerField);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" is still alive! Game continues!");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+                    else
+                    {
+                    redo:
+                        ShowBSField(playerField);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" has been defeated! Better luck next time!\nDo you wanna PLAY again or do you wanna EXIT?: ");
+                        string userInput = Console.ReadLine().Trim().ToUpper();
+                        if (userInput == "PLAY")
+                        {
+                            Console.WriteLine("Resetting the playing field!");
+                            for (int x = 0; x < enemyField.GetLength(0); x++) // Resets all the field arrays!
+                            {
+                                for (int y = 0; y < enemyField.GetLength(1); y++)
+                                {
+                                    enemyField[x, y] = 0;
+                                    playerField[x, y] = 0;
+                                    attackField[x, y] = 0;
+                                }
+                            }
+                            GenerateBSEnemyField(enemyField);
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Console.Clear();
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
+                            playerInitiativ = rnd.Next(1, 3);
+                            if (playerInitiativ == 1)
+                            {
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!");
+                            }
+                        }
+                        else if (userInput == "EXIT")
+                        {
+                            gameEnd = true;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Returning to main menu!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Didn't understand! Try Again!");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto redo;
+                        }
+                    }
+                }
+                else
+                {
+                    BSEnemyFire(playerField);
+                    playerAlive = IsPlayerAlive(playerField);
+                    if (playerAlive)
+                    {
+                        ShowBSField(playerField);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" is still alive! Game continues!");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+                    else
+                    {
+                    redo:
+                        ShowBSField(playerField);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" has been defeated! Better luck next time!\nDo you wanna PLAY again or do you wanna EXIT?: ");
+                        string userInput = Console.ReadLine().Trim().ToUpper();
+                        if (userInput == "PLAY")
+                        {
+                            Console.WriteLine("Resetting the playing field!");
+                            for (int x = 0; x < enemyField.GetLength(0); x++) // Resets all the field arrays!
+                            {
+                                for (int y = 0; y < enemyField.GetLength(1); y++)
+                                {
+                                    enemyField[x, y] = 0;
+                                    playerField[x, y] = 0;
+                                    attackField[x, y] = 0;
+                                }
+                            }
+                            GenerateBSEnemyField(enemyField);
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Console.Clear();
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
+                            playerInitiativ = rnd.Next(1, 3);
+                            if (playerInitiativ == 1)
+                            {
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!\n");
+                            }
+                        }
+                        else if (userInput == "EXIT")
+                        {
+                            gameEnd = true;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Returning to main menu!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Didn't understand! Try Again!");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto redo;
+                        }
+                    }
+                    BSPlayerFire(enemyField, attackField);
+                    enemyAlive = IsPlayerAlive(enemyField);
+                    if (enemyAlive)
+                    {
+                        ShowBSField(attackField);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("Enemy");
+                        Console.ResetColor();
+                        Console.Write(" is stil alive! Game continues!");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+                    else
+                    {
+                    redo:
+                        ShowBSField(playerField);
+                        Console.ForegroundColor = userColor;
+                        Console.Write(userName);
+                        Console.ResetColor();
+                        Console.Write(" has defeated The Computer! Congratulations!\nDo you wanna PLAY again or do you wanna EXIT?: ");
+                        string userInput = Console.ReadLine().Trim().ToUpper();
+                        if (userInput == "PLAY")
+                        {
+                            Console.WriteLine("Resetting the playing field!");
+                            for (int x = 0; x < enemyField.GetLength(0); x++) // Resets all the field arrays!
+                            {
+                                for (int y = 0; y < enemyField.GetLength(1); y++)
+                                {
+                                    enemyField[x, y] = 0;
+                                    playerField[x, y] = 0;
+                                    attackField[x, y] = 0;
+                                }
+                            }
+                            GenerateBSEnemyField(enemyField);
+                        redo2:
+                            Console.Write("Do you wanna place your OWN ships or allow the COMPUTER?: ");
+                            string answer = Console.ReadLine().Trim().ToUpper();
+                            if (answer == "OWN")
+                            {
+                                Console.WriteLine("Well let's get to it!");
+                                Console.ReadKey();
+                                Console.Clear();
+                                UserFieldGeneration(playerField);
+                            }
+                            else if (answer == "COMPUTER")
+                            {
+                                Color(ConsoleColor.DarkRed);
+                                Console.WriteLine("COMPUTER GENERATING PLAYERFIELD!!!!\n");
+                                GenerateBSEnemyField(playerField);
+                                Console.WriteLine("FINAL SETUP!");
+                                Console.ResetColor();
+                                ShowBSField(playerField);
+                                Console.ReadKey();
+                                Console.Clear();
+                            }
+                            else
+                            {
+                                Color(ConsoleColor.Red);
+                                Console.WriteLine("Didn't understand?");
+                                Console.ReadKey();
+                                Console.ResetColor();
+                                Console.Clear();
+                                goto redo2;
+                            }
+                            playerInitiativ = rnd.Next(1, 3);
+                            if (playerInitiativ == 1)
+                            {
+                                Console.ForegroundColor = userColor;
+                                Console.Write(userName);
+                                Console.ResetColor();
+                                Console.Write("Player starts next game!\n");
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("Computer");
+                                Console.ResetColor();
+                                Console.Write(" starts next game!");
+                            }
+                        }
+                        else if (userInput == "EXIT")
+                        {
+                            gameEnd = true;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Returning to main menu!");
+                            Console.ReadKey();
+                            Console.Clear();
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Didn't understand! Try Again!");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            goto redo;
+                        }
+                    }
+                }
+                if (enemyAlive && playerAlive)
+                {
+                redo:
+                    Console.Write("Both sides are still alive. Do you wanna continue playing?\nWrite ");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("PLAY");
+                    Console.ResetColor();
+                    Console.Write(" or press enter without writing anything to continue playing! Write ");
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("EXIT");
+                    Console.ResetColor();
+                    Console.Write(" to end the game: ");
+                    string userInput = Console.ReadLine().Trim().ToUpper();
+                    if (userInput == "PLAY" || userInput == "")
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("The Game continues!");
+                        playerAlive = false;
+                        enemyAlive = false;
+                        Console.ReadKey();
+                        Console.Clear();
+                        Console.ResetColor();
+                    }
+                    else if (userInput == "EXIT")
+                    {
+                        gameEnd = true;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Returning to main menu!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Didn't understand! Try Again!");
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        Console.Clear();
+                        goto redo;
+                    }
+                }
+            }
+            appState = GameState.MainMenu;
         }
+        #endregion
     }
 }
