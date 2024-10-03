@@ -162,6 +162,7 @@ namespace ClassicGameClient
                         Console.WriteLine("Wrong number or not a number! Try again!");
                         Console.ReadKey();
                         Console.Clear();
+                        intXChecker = false;
                         continue;
                     }
                 }
@@ -180,6 +181,7 @@ namespace ClassicGameClient
                         Console.WriteLine("Wrong number or not a number! Try again!");
                         Console.ReadKey();
                         Console.Clear();
+                        intYChecker = false;
                         continue;
                     }
                 }
