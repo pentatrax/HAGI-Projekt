@@ -2575,7 +2575,57 @@ namespace ClassicGameClient
         }
         private static void Mastermind(out GameState appState)
         {
-            throw new NotImplementedException();
+            int[,] gameBoard = new int [4, 10]
+            {
+                {1,2,3,4,5,6,7,8,9,10 },
+                {1,2,3,4,5,6,7,8,9,10 },
+                {1,2,3,4,5,6,7,8,9,10 },
+                {1,2,3,4,5,6,7,8,9,10 }
+            };
+
+            for (int x = 0; x < gameBoard.GetLength(0); x++)
+            {
+                for (int y = 0; y < gameBoard.GetLength(1); y++)
+                {
+                    switch (gameBoard[x,y])
+                    {
+                        case 0:
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            break;
+                        
+                        case 1:
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            break;
+                        
+                        case 2:
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            break;
+                        
+                        case 3:
+                            Console.BackgroundColor = ConsoleColor.Blue;
+                            break;
+                        
+                        case 4:
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                            break;
+                        
+                        case 5:
+                            Console.BackgroundColor = ConsoleColor.Cyan;
+                            break;
+                        
+                        case 6:
+                            Console.BackgroundColor = ConsoleColor.Magenta;
+                            break;
+                        
+                        default:
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            break;
+                    }
+                }
+                    Console.WriteLine();
+            }
+            
+            appState = GameState.MainMenu;
         }
 
         private static void Jeopardy(out GameState appState)
