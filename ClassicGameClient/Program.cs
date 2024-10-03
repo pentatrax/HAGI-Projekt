@@ -2359,6 +2359,33 @@ namespace ClassicGameClient
             /// <param name="checkMated">Takes a boolean determining if the game is in a checkmate or not.</param>
             void DrawChessBoard(byte[,] board, int movesMade, string lastMove, bool checkMated)
             {
+                void LogoPixel(string row, ConsoleColor color, ConsoleColor backColor)
+                {
+                    for (int i = 0; i<row.Length; i++)
+                    {
+                        switch (row[i])
+                        {
+                            case ' ':
+                                BackColor(backColor);
+                                Log("  ");
+                                break;
+                            default:
+                                BackColor(color);
+                                Log("  ");
+                                break;
+                        }
+                    }
+                }
+                ConsoleColor logoColor = ConsoleColor.White;
+                ConsoleColor logoBackColor = ConsoleColor.DarkBlue;
+                string[] logo =
+                {
+                    " #### #  # #### #### #### ",
+                    " #  # #  # #    #    #    ",
+                    " #    #### ###  #### #### ",
+                    " #  # #  # #       #    # ",
+                    " #### #  # #### #### #### "
+                };
                 int boardDepth = board.Length / board.GetLength(0);
                 ChessPieces character = ChessPieces.None;
                 string characterAsci = " KQBRNP";
@@ -2425,17 +2452,37 @@ namespace ClassicGameClient
                             Log("Last Move: ", ConsoleColor.Blue);
                             Log(lastMove, ConsoleColor.White);
                             break;
-                            //case 2:
-                            //    Log("   ");
-                            //    Log("Checkmated: ", ConsoleColor.Blue);
-                            //    if (checkMated)
-                            //    {
-                            //        Log("Check Mate!");
-                            //    } else
-                            //    {
-                            //        Log("N/A");
-                            //    }
-                            //    break;
+                        //case 2:
+                        //    Log("   ");
+                        //    Log("Checkmated: ", ConsoleColor.Blue);
+                        //    if (checkMated)
+                        //    {
+                        //        Log("Check Mate!");
+                        //    } else
+                        //    {
+                        //        Log("N/A");
+                        //    }
+                        //    break;
+                        case 3:
+                            Log("  ");
+                            LogoPixel(logo[0], logoColor, logoBackColor);
+                            break;
+                        case 4:
+                            Log("  ");
+                            LogoPixel(logo[1], logoColor, logoBackColor);
+                            break;
+                        case 5:
+                            Log("  ");
+                            LogoPixel(logo[2], logoColor, logoBackColor);
+                            break;
+                        case 6:
+                            Log("  ");
+                            LogoPixel(logo[3], logoColor, logoBackColor);
+                            break;
+                        case 7:
+                            Log("  ");
+                            LogoPixel(logo[4], logoColor, logoBackColor);
+                            break;
                     }
                     Log("\n");
                 }
@@ -2444,6 +2491,7 @@ namespace ClassicGameClient
                 {
                     Log(" " + boardCords[0][i], ConsoleColor.Blue);
                 }
+                Log("", logoColor);
                 Log("\n");
             }
             gameState = GameState.Chess;
@@ -3087,7 +3135,7 @@ namespace ClassicGameClient
         /// <param name="appState"></param>
         private static void SinkAShip(out GameState appState) // Made by Lasse Handberg Gohlke
         {
-            appState = GameState.Chess;
+            appState = GameState.SinkAShip;
             Random rnd = new Random();
             int[,] playerField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
             int[,] enemyField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
