@@ -1810,11 +1810,11 @@ namespace ClassicGameClient
                         temp[PawnCoords[1], PawnCoords[0]] = player ?
                             (byte)ChessPieces.WhiteBishop : (byte)ChessPieces.BlackBishop;
                         break;
-                    case "Rook":
+                    case "rook":
                         temp[PawnCoords[1], PawnCoords[0]] = player ?
                             (byte)ChessPieces.WhiteRook : (byte)ChessPieces.BlackRook;
                         break;
-                    case "Knight":
+                    case "knight":
                         temp[PawnCoords[1], PawnCoords[0]] = player ?
                             (byte)ChessPieces.WhiteKnight : (byte)ChessPieces.BlackKnight;
                         break;
