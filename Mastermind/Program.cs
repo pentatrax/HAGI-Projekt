@@ -15,7 +15,31 @@ namespace Mastermind
             byte[,] feedback = new byte[10, 4];
 
             //Intro screen
-            Console.WriteLine("Welcome to Mastermind, I am the Codemaster and your objective is to guess the code i will come up with." +
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.WriteLine(
+                " __        __   _                            _        \n" +
+                " \\ \\      / /__| | ___ ___  _ __ ___   ___  | |_ ___  \n" +
+                "  \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\ \n" +
+                "   \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) |\n" +
+                "    \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/\n");
+
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine(
+                "888b     d888                   888                                  d8b               888 \n" +
+                "8888b   d8888                   888                                  Y8P               888 \n" +
+                "88888b.d88888                   888                                                    888 \n" +
+                "888Y88888P888  8888b.  .d8888b  888888 .d88b.  888d888 88888b.d88b.  888 88888b.   .d88888 \n" +
+                "888 Y888P 888     \"88b 88K      888   d8P  Y8b 888P\"   888 \"888 \"88b 888 888 \"88b d88\" 888 \n" +
+                "888  Y8P  888 .d888888 \"Y8888b. 888   88888888 888     888  888  888 888 888  888 888  888 \n" +
+                "888   \"   888 888  888      X88 Y88b. Y8b.     888     888  888  888 888 888  888 Y88b 888 \n" +
+                "888       888 \"Y888888  88888P'  \"Y888 \"Y8888  888     888  888  888 888 888  888  \"Y88888\n");
+            
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("Made by Thomas Mortensen\n");
+            Console.BackgroundColor = ConsoleColor.Black;
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\nGreetings, I am the Codemaster and your objective is to guess the code i will come up with." +
                 "\n\nBefore we begin do you want to view the tutorial?");
 
             #region Tutorial
@@ -37,8 +61,8 @@ namespace Mastermind
                     Console.WriteLine("\n1. You will take a turn trying to guess the code" +
                         "\n\n2. I will give you feedback on your guess:" +
                         "\n   - If you guess the code correctly, you win!" +
-                        "\n   - If you guess a color correctly, but it is not in the correct position, you get a colored peg" + //Colored peg
-                        "\n   - If you guess a color correctly and it is in the correct position, you get a white peg" + //White Peg
+                        "\n   - If you guess a color in the code correctly, but it is not in the correct position, you get a white peg" +
+                        "\n   - If you guess a color and its position correctly, you get a colored peg" +
                         "\n\n3. If your guess was not correct, you take your next turn");
 
                     Console.WriteLine("\nPress any key to continue to the game");
@@ -77,9 +101,10 @@ namespace Mastermind
             Console.WriteLine("I have come up with a code, now your job is to try to guess it!");
 
             #region Gameloop
-            byte turn;
+            byte turn = 1;
+            bool gameWon = false;
 
-            for (turn = 1; turn <= 10; turn++)
+            for (turn = 1; turn <= 11; turn++)
             {
                 Console.Clear(); //Clears the board before the next round
 
@@ -128,7 +153,7 @@ namespace Mastermind
                             if (y == 3)
                             {
                                 Console.BackgroundColor = ConsoleColor.Black;
-                                Console.Write("| ");
+                                Console.Write("|-");
                             }
                         }
                         else
@@ -137,6 +162,12 @@ namespace Mastermind
 
                             ColorSwitch(feedback[x, y - 4]);
                             Console.Write(" "); //Sets width (and look) of feedback "pegs"
+
+                            if (y == 7)
+                            {
+                                Console.BackgroundColor = ConsoleColor.Black;
+                                Console.Write("| ");
+                            }
                         }
 
                         //Console.ForegroundColor = ConsoleColor.White;
@@ -174,27 +205,41 @@ namespace Mastermind
                 }
                 #endregion
 
-                #region Guessing
-                Console.WriteLine("\nPlease write your guess using this format:" +
-                    "\n1st color-2nd color-3rd color-4th color");
+                Console.WriteLine();
 
                 bool guessPrompt = true;
 
+                if (turn == 11 || gameWon == true)
+                {
+                    guessPrompt = false;
+
+                    break;
+                }
+
+                #region Guessing
                 string[] splitGuess = new string[4];
 
                 while (guessPrompt == true)
                 {
+                    Console.WriteLine("Please write your guess using this format:" +
+                        "\n1st color-2nd color-3rd color-4th color");
+
                     string wholeGuess = Console.ReadLine().ToLower(); //Reads input and makes it all lowercase
 
                     #region Guess format & specific color authentication
-                    Regex guessFormat = new Regex(@"(\w+-\w+-\w+-\w+)");
+                    Regex guessFormat = new Regex(@"(^\w+-\w+-\w+-\w+$)");
                     bool validGuessFormat = guessFormat.IsMatch(wholeGuess);
 
-                    //Split whole guess (at every '-') into seperate strings and saves in splitGuess string-array
-                    splitGuess = wholeGuess.Split('-');
                     
                     if (validGuessFormat == true)
                     {
+                        //Split whole guess (at every '-') into seperate strings and saves in splitGuess string-array
+                        splitGuess = wholeGuess.Split('-');
+                        //for (int i = 0; i < splitGuess.Length; i++)
+                        //{
+                        //    splitGuess[i] = wholeGuess.Split('-')[i];
+                        //}
+
                         foreach (string color in splitGuess)
                         {
                             //Color authentication
@@ -311,9 +356,14 @@ namespace Mastermind
                     {
                         feedback[turn - 1, i] = 7;
                     }
+
+                    if (coloredPegs == 4)
+                    {
+                        gameWon = true;
+                    }
                 }
 
-                else if (whitePegs > 0)
+                if (whitePegs > 0)
                 {
                     for (byte i = 0; i < whitePegs; i++)
                     {
@@ -325,13 +375,20 @@ namespace Mastermind
             }
             #endregion
 
-            if (turn == 1)
+            if (gameWon == true)
             {
-                Console.WriteLine("You won in 1 turn!");
+                if (turn - 1 == 1)
+                {
+                    Console.WriteLine("You won in 1 turn!");
+                }
+                else
+                {
+                    Console.WriteLine($"You won in {turn - 1} turns!");
+                }
             }
             else
             {
-                Console.WriteLine($"You won in {turn} turns!");
+                Console.WriteLine("You lost :(");
             }
 
             Console.ReadKey();
