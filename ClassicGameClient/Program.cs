@@ -404,10 +404,11 @@ namespace ClassicGameClient
 
             //Game end conditions
             #region _End
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("APPLICATION END: PRESS ANY KEY");
+            Console.WriteLine("Game ended. Returning to main menu.");
             Console.ReadKey();
-            Environment.Exit(0);
+            Console.Clear();
+            appState = GameState.MainMenu;
+            return;
             #endregion
 
 
@@ -892,4 +893,3 @@ namespace ClassicGameClient
 
 //Editing changes: Added regions outside of Jeopardy function for easier reading.
 //Editing changes: Set game-state to always be jeopardy for easier testing.
-//Editing changes: Added jeopardy game function
