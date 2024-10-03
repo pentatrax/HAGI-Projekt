@@ -48,15 +48,15 @@ namespace ClassicGameClient
             WhiteKing = 1,
             WhiteQueen = 2,
             WhiteBishop = 3,
-            WhiteTower = 4,
-            WhiteHorse = 5,
-            WhiteRook = 6,
+            WhiteRook = 4,
+            WhiteKnight = 5,
+            WhitePawn = 6,
             BlackKing = 7,
             BlackQueen = 8,
             BlackBishop = 9,
-            BlackTower = 10,
-            BlackHorse = 11,
-            BlackRook = 12,
+            BlackRook = 10,
+            BlackKnight = 11,
+            BlackPawn = 12,
         }
         #region BattleshipEnums
         //Enums for the Battleship Game
@@ -1773,52 +1773,52 @@ namespace ClassicGameClient
         /// <param name="gameState">Writes to gameState to change the state of the application.</param>
         private static void Chess(out GameState gameState)
         {
-            byte[,] ChangeRook(byte[,] board, string input, byte[] rookCoords, bool player, out string error)
+            byte[,] ChangePawn(byte[,] board, string input, byte[] PawnCoords, bool player, out string error)
             {
                 byte[,] temp = CopyChessBoard(board);
-                bool rookChanged = true;
+                bool PawnChanged = true;
                 error = "";
                 switch (input)
                 {
                     case "queen":
-                        temp[rookCoords[1], rookCoords[0]] = player ?
+                        temp[PawnCoords[1], PawnCoords[0]] = player ?
                             (byte)ChessPieces.WhiteQueen : (byte)ChessPieces.BlackQueen;
                         break;
                     case "bishop":
-                        temp[rookCoords[1], rookCoords[0]] = player ?
+                        temp[PawnCoords[1], PawnCoords[0]] = player ?
                             (byte)ChessPieces.WhiteBishop : (byte)ChessPieces.BlackBishop;
                         break;
-                    case "tower":
-                        temp[rookCoords[1], rookCoords[0]] = player ?
-                            (byte)ChessPieces.WhiteTower : (byte)ChessPieces.BlackTower;
+                    case "Rook":
+                        temp[PawnCoords[1], PawnCoords[0]] = player ?
+                            (byte)ChessPieces.WhiteRook : (byte)ChessPieces.BlackRook;
                         break;
-                    case "horse":
-                        temp[rookCoords[1], rookCoords[0]] = player ?
-                            (byte)ChessPieces.WhiteHorse : (byte)ChessPieces.BlackHorse;
+                    case "Knight":
+                        temp[PawnCoords[1], PawnCoords[0]] = player ?
+                            (byte)ChessPieces.WhiteKnight : (byte)ChessPieces.BlackKnight;
                         break;
                     default:
-                        error = "Rook can't change into that!";
-                        rookChanged = false;
+                        error = "Pawn can't change into that!";
+                        PawnChanged = false;
                         break;
                 }
-                return rookChanged ? temp : board;
+                return PawnChanged ? temp : board;
             }
             /// <summary>
-            /// Checks both ends of the board to see if a rook has moved to an edge.
+            /// Checks both ends of the board to see if a Pawn has moved to an edge.
             /// </summary>
             /// <param name="board">Takes a byte array that is the current state ofthe board.</param>
             /// <param name="player">Takes a bool value that determines if check white player or not.</param>
-            /// <param name="rookCoords">Outputs the coordinates of the rook to this variable.</param>
-            bool RookReachedOtherSide(byte[,] board, bool player, out byte[] rookCoords)
+            /// <param name="PawnCoords">Outputs the coordinates of the Pawn to this variable.</param>
+            bool PawnReachedOtherSide(byte[,] board, bool player, out byte[] PawnCoords)
             {
                 bool reachedOtherSide = false;
-                rookCoords = new byte[2];
+                PawnCoords = new byte[2];
                 ChessPieces currentPiece = ChessPieces.None;
-                ChessPieces pieceToCheckFor = player ? ChessPieces.WhiteRook : ChessPieces.BlackRook;
+                ChessPieces pieceToCheckFor = player ? ChessPieces.WhitePawn : ChessPieces.BlackPawn;
                 byte[] coords = new byte[2];
                 coords[1] = player ? (byte)0 : (byte)(board.GetLength(0) - 1);
 
-                // loops through either white or black rows to check if a rook made it to the other side.
+                // loops through either white or black rows to check if a Pawn made it to the other side.
                 for (int i = 0; i < board.GetLength(0); i++)
                 {
                     coords[0] = (byte)i;
@@ -1826,8 +1826,8 @@ namespace ClassicGameClient
                     if (currentPiece == pieceToCheckFor)
                     {
                         reachedOtherSide = true;
-                        rookCoords[0] = coords[0];
-                        rookCoords[1] = coords[1];
+                        PawnCoords[0] = coords[0];
+                        PawnCoords[1] = coords[1];
                         break;
                     }
                 }
@@ -1907,7 +1907,7 @@ namespace ClassicGameClient
 
                 switch ((ChessPieces)piece)
                 {
-                    case ChessPieces.WhiteRook:
+                    case ChessPieces.WhitePawn:
                         if (player)
                         {
                             possibleMove[0] = (byte)(from[0]);
@@ -1957,7 +1957,7 @@ namespace ClassicGameClient
                             }
                         }
                         break;
-                    case ChessPieces.WhiteHorse:
+                    case ChessPieces.WhiteKnight:
                         possibleMove = new byte[2];
                         moveSet = new int[8, 2]{
                             {1,-2},
@@ -2004,7 +2004,7 @@ namespace ClassicGameClient
                         }
 
                         break;
-                    case ChessPieces.WhiteTower:
+                    case ChessPieces.WhiteRook:
                         moveSet = new int[4, 2]
                         {
                             {-1,0},
@@ -2031,9 +2031,9 @@ namespace ClassicGameClient
                                 }
                                 opponentBlocking = player ?
                                     (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) >= (byte)ChessPieces.BlackKing) :
-                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhiteRook && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None);
+                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhitePawn && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None);
                                 ownPieceBlocking = player ?
-                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhiteRook && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None) :
+                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhitePawn && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None) :
                                     (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) >= (byte)ChessPieces.BlackKing);
                                 possibleMoveIsMove = (to[0] == possibleMove[0] && to[1] == possibleMove[1]);
 
@@ -2081,9 +2081,9 @@ namespace ClassicGameClient
                                 }
                                 opponentBlocking = player ?
                                     (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) >= (byte)ChessPieces.BlackKing) :
-                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhiteRook && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None);
+                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhitePawn && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None);
                                 ownPieceBlocking = player ?
-                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhiteRook && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None) :
+                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhitePawn && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None) :
                                     (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) >= (byte)ChessPieces.BlackKing);
                                 possibleMoveIsMove = (to[0] == possibleMove[0] && to[1] == possibleMove[1]);
 
@@ -2135,9 +2135,9 @@ namespace ClassicGameClient
                                 }
                                 opponentBlocking = player ?
                                     (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) >= (byte)ChessPieces.BlackKing) :
-                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhiteRook && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None);
+                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhitePawn && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None);
                                 ownPieceBlocking = player ?
-                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhiteRook && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None) :
+                                    (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) <= (byte)ChessPieces.WhitePawn && (byte)GetBoardPiece(board, possibleMove) > (byte)ChessPieces.None) :
                                     (!BoardSpotIsEmpty(board, possibleMove) && (byte)GetBoardPiece(board, possibleMove) >= (byte)ChessPieces.BlackKing);
                                 possibleMoveIsMove = (to[0] == possibleMove[0] && to[1] == possibleMove[1]);
 
@@ -2250,11 +2250,11 @@ namespace ClassicGameClient
                 char piece = setup.ToUpper()[index];
                 switch (piece)
                 {
-                    case 'T':
-                        value = (isPlayerChessPieces) ? ChessPieces.WhiteTower : ChessPieces.BlackTower;
+                    case 'R':
+                        value = (isPlayerChessPieces) ? ChessPieces.WhiteRook : ChessPieces.BlackRook;
                         break;
-                    case 'H':
-                        value = (isPlayerChessPieces) ? ChessPieces.WhiteHorse : ChessPieces.BlackHorse;
+                    case 'N':
+                        value = (isPlayerChessPieces) ? ChessPieces.WhiteKnight : ChessPieces.BlackKnight;
                         break;
                     case 'B':
                         value = (isPlayerChessPieces) ? ChessPieces.WhiteBishop : ChessPieces.BlackBishop;
@@ -2265,8 +2265,8 @@ namespace ClassicGameClient
                     case 'K':
                         value = (isPlayerChessPieces) ? ChessPieces.WhiteKing : ChessPieces.BlackKing;
                         break;
-                    case 'R':
-                        value = (isPlayerChessPieces) ? ChessPieces.WhiteRook : ChessPieces.BlackRook;
+                    case 'P':
+                        value = (isPlayerChessPieces) ? ChessPieces.WhitePawn : ChessPieces.BlackPawn;
                         break;
                     case ' ':
                         value = ChessPieces.None;
@@ -2286,8 +2286,8 @@ namespace ClassicGameClient
             byte[,] PopulateBoard(byte[,] board)
             {
                 int boardDepth = board.Length / board.GetLength(0);
-                string setup1 = "THBQKBHT";
-                string setup2 = "RRRRRRRR";
+                string setup1 = "RNBQKBNR";
+                string setup2 = "PPPPPPPP";
                 string setup3 = "        ";
                 for (int depth = 0; depth < boardDepth; depth++)
                 {
@@ -2338,7 +2338,7 @@ namespace ClassicGameClient
             {
                 int boardDepth = board.Length / board.GetLength(0);
                 ChessPieces character = ChessPieces.None;
-                string characterAsci = " KQBTHR";
+                string characterAsci = " KQBRNP";
                 string[] boardCords = {
                 "ABCDEFGH",
                 "87654321"
@@ -2428,7 +2428,7 @@ namespace ClassicGameClient
             int boardSize = 8;
             byte[,] gameBoard = new byte[boardSize, boardSize];
             string movesHistory = "";
-            byte[] coordsOfRookThatReachedOtherSide = new byte[2];
+            byte[] coordsOfPawnThatReachedOtherSide = new byte[2];
             bool inGame = true;
             bool playerTurn = true;
             bool checkMate = false;
@@ -2475,7 +2475,7 @@ namespace ClassicGameClient
                                 movesHistory += playerTurn ? ",[W]" : ",[B]";
                                 movesHistory += playerInput;
                             }
-                            while (RookReachedOtherSide(gameBoard, playerTurn, out coordsOfRookThatReachedOtherSide))
+                            while (PawnReachedOtherSide(gameBoard, playerTurn, out coordsOfPawnThatReachedOtherSide))
                             {
                                 Console.Clear();
                                 DrawChessBoard(gameBoard, movesHistory.Split(',').Length - 1, movesHistory.Split(',').Last().ToUpper(), checkMate);
@@ -2489,11 +2489,11 @@ namespace ClassicGameClient
                                     Log("Black", ConsoleColor.Gray);
                                 }
                                 if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
-                                Log(", you managed to get a Rook to the other side!\n", ConsoleColor.Green);
+                                Log(", you managed to get a Pawn to the other side!\n", ConsoleColor.Green);
                                 Log("What piece do you want to change it to?\n", ConsoleColor.Yellow);
-                                Log("Choice [Queen / Bishop / Tower / Horse]: ", ConsoleColor.Yellow);
+                                Log("Choice [Queen / Bishop / Rook / Knight]: ", ConsoleColor.Yellow);
                                 playerInput = Console.ReadLine().ToLower();
-                                gameBoard = ChangeRook(gameBoard, playerInput, coordsOfRookThatReachedOtherSide, playerTurn, out errorMsg);
+                                gameBoard = ChangePawn(gameBoard, playerInput, coordsOfPawnThatReachedOtherSide, playerTurn, out errorMsg);
                             }
                             playerTurn = (errorMsg == "") ? !playerTurn : playerTurn;
                             break;
