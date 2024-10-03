@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ClassicGameClient
@@ -9,8 +11,9 @@ namespace ClassicGameClient
 
         static void Main(string[] args)
         {
+            #region Initiator
             bool appRunning = true;
-            GameState appState = GameState.MainMenu;
+            GameState appState = GameState.Jeopardy;
             while (appRunning)
             {
                 switch (appState)
@@ -32,7 +35,9 @@ namespace ClassicGameClient
                         break;
                 }
             }
+            #endregion
         }
+        #region Chess Data
         private enum GameState : byte
         {
             MainMenu = 0,
@@ -2527,9 +2532,556 @@ namespace ClassicGameClient
         {
             throw new NotImplementedException();
         }
+        #endregion
 
         private static void Jeopardy(out GameState appState)
         {
+            //Quiz arrays and variable initialisers
+            #region _Variables
+            int[,] pointsArray = new int[5,5]
+            {
+                {100, 100, 100, 100, 100},
+                {200, 200, 200, 200, 200},
+                {300, 300, 300, 300, 300},
+                {400, 400, 400, 400, 400},
+                {500, 500, 500, 500, 500}
+            };
+
+            string[,] questionsArray = new string[5,5]
+            {
+                {"The first name of Germany's dictator during World War 2.", "A flat, round Italian food that is generally served with cheese, tomato and a variety of other toppings.", "This band is popular for hits such as \"Mama Mia\" and \"Dancing Queen\".", "Tech A4", "A Chinese social media platform that is currently popular for sharing and creating short videos."},
+                {"The last name of the man who directed the Manhattan Project. He is said to be the \"father of the atomic bomb\".", "This fruit is associated with the discovery of gravity when it fell and hit Isaac Newton in the head.", "Real name Tim Bergling, this Swedish DJ goes by this artist name.", "Tech B4", "A frog muppet who is commonly shown in a variety of internet memes."},
+                {"The Declaration of Independence was signed during this year.", "The name of a celebrity chef who is famous for his aggressive behaviour towards other chefs which he deems bad at cooking.", "This musician is well known for his song that is commonly used to trick people online into listening to it.", "Tech C4", "Created in June 2012, this social media platform became popular for sharing and creating short, comedic videos."},
+                {"This female aviation pioneer disappeared over the Pacific Ocean on her journey to become the first female pilot to circumnavigate the world.", "Beside sushi, this is one of Japan's most popular and globally known foods.", "This term refers to the fact that an unusual amount of musicians have all died at the same specific age.", "Tech D4", "This song and music video is known for being re-created both audibly and visually in unusual ways, often using tools that are not designed for it."},
+                {"This peace contract written by \"The big three\" was signed in June 1919 and played a key role in ending World War 1.", "The popular fast-food, French fries, originates from this country.", "First and last name of the original lead singer of Linkin Park.", "Tech E4", "This videogame is commonly referred to in the question \"But can it run ...\" due to its high hardware requirements for its time."}
+            };
+
+            string[,] answersArray =
+            {
+                {"Adolf", "Pizza", "ABBA", "Tech A4", "TikTok"},
+                {"Oppenheimer", "Apple", "Avicii", "Tech B4", "Pepe"},
+                {"1776", "Gordon Ramsay", "Rick Astley", "Tech C4", "Vine"},
+                {"Amelia Earhart", "Ramen", "27 Club", "Tech D4", "Bad Apple"},
+                {"Treaty of Versaille", "Belgium", "Chester Bennington", "Tech E4", "Crysis"}
+            };
+
+            string[] categories = {"History", "Food", "Music", "Tech", "Memes"};
+            string[] playerNames = { };
+            int[] playerScores = { };
+            int currentPlayer = 0;
+            int intChoiceX = 0;
+            int intChoiceY = 0;
+            int currentGuesses;
+            string answer;
+            bool quit = false;
+            #endregion
+
+            //Start game
+            #region _StartGame
+            appState = GameState.Jeopardy;
+            AsciiScroll();
+            int playerCount = PlayerCount(out appState);
+            Array.Resize<string>(ref playerNames, playerCount);
+            Array.Resize<int>(ref playerScores, playerCount);
+            AsciiScroll();
+            for (int x = 0; x < playerScores.GetLength(0); x++)
+            {
+                playerScores[x] = 0;
+            }
+            if (quit == false)
+            {
+                PlayerNames();
+            }
+            Console.Clear();
+            if (quit == false)
+            {
+                WriteBoard();
+            }
+            #endregion
+
+            //Game end conditions
+            #region _End
+            Console.WriteLine("Game ended. Returning to main menu.");
+            Console.ReadKey();
+            Console.Clear();
+            appState = GameState.MainMenu;
+            return;
+            #endregion
+
+
+            
+
+            //--------------------------------------------------FUNCTIONS--------------------------------------------------
+            #region PlayerCount
+            int PlayerCount(out GameState state)
+            {
+                state = GameState.Jeopardy;
+                Console.Write("Player count: ");
+                int value2;
+                while (quit == false)
+                {
+                    string value1 = Console.ReadLine();
+                    if (value1 == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
+                    if (int.TryParse(value1, out value2))
+                    {
+                        if (value2 < 1 || value2 > 10)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Out of range! Max 10 players.");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            AsciiScroll();
+                            Console.Write("Player count: ");
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            return value2;
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Error: Input is not valid a number. Please try again.", true);
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        Console.Clear();
+                        AsciiScroll();
+                        Console.Write("Player count: ");
+                    }
+                }
+                return 0;
+            }
+            #endregion
+
+            #region PlayerNames
+            void PlayerNames()
+            {
+                for (int i = 0; i < playerNames.Length; i++)
+                {
+                    Console.Write($"Player {i + 1}'s name: ");
+                    playerNames[i] = (Console.ReadLine());
+                    if (playerNames[i] == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
+                    Console.Clear();
+                    AsciiScroll();
+                }
+                Console.WriteLine("Confirm players? Type yes/no to confirm or redo player names.");
+                if (quit == false)
+                {
+                    string redoAnswer = Console.ReadLine();
+                    if (redoAnswer == "/quit")
+                    {
+                        quit = true;
+                    }
+                    while ((redoAnswer != "yes") && (redoAnswer != "no") && (redoAnswer != "") && (quit == false))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid input.");
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        Console.Clear();
+                        AsciiScroll();
+                        Console.WriteLine("Confirm players? Type yes/no to confirm or redo player names.");
+                        redoAnswer = Console.ReadLine();
+                    }
+                    if (redoAnswer == "no")
+                    {
+                        Console.Clear();
+                        AsciiScroll();
+                        PlayerNames();
+                    }
+                    else if (quit == false)
+                    {
+                        Console.Clear();
+                        AsciiScroll();
+                        Console.WriteLine("Great, lets play! Press any key to continue.");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+                }
+            }
+            #endregion
+
+            //Sets up the board of questions, displays player scores and calls SelectQuestion.
+            #region WriteBoard
+            void WriteBoard(bool proceed = true)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("Topics:   History, Food, Music,");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("        _______________________X____________________");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("              Tech, Memes");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("             |     HIS 1   FD  2   MUS 3   TCH 4   ME  5");
+                Console.WriteLine("                                      |    +-----+ +-----+ +-----+ +-----+ +-----+");
+                for (int x = 0; x < questionsArray.GetLength(0); x++)
+                {
+                    if (x == 2)
+                    {
+                        Console.Write("                                      Y    ");
+                    }
+                    else
+                    {
+                        Console.Write("                                      |    ");
+                    }
+                    for (int y = 0; y < questionsArray.GetLength(1); y++)
+                    {
+                        if (pointsArray[x, y] != 0)
+                        {
+                            Console.Write($"| ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.Write(pointsArray[x, y]);
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write(" | ");
+                        }
+                        else
+                        {
+                            Console.Write($"|     | ");
+                        }
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine("                                      |    +-----+ +-----+ +-----+ +-----+ +-----+");
+                }
+                Console.ResetColor();
+                Console.WriteLine();
+                for (int x = 0; x < playerNames.GetLength(0); x++)
+                {
+                    if (currentPlayer == x)
+                    {
+                        Console.WriteLine($"-> {playerNames[x]}: {playerScores[x]} points");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"   {playerNames[x]}: {playerScores[x]} points");
+                    }
+                }
+                Console.WriteLine("                                            Which question do you want to choose?   ");
+                if (proceed == true)
+                {
+                    SelectQuestion();
+                }
+            }
+            #endregion
+
+            //Asks the player for input and points to the corresponding question on the board.
+            //Writes an error if the input is not a number, or if it is out of array range.
+            //Writes another error if the selected question is equal to zero on the pointsArray.
+            //Calls WriteQuestion on succesful selection.
+            #region SelectQuestion
+            void SelectQuestion()
+            {
+                //int checkValue;
+                string stringChoiceX;
+                string stringChoiceY;
+                Console.WriteLine();
+                Console.Write("                                            Category: ");
+                while (quit == false)
+                {
+                    stringChoiceX = (Console.ReadLine());
+                    if (stringChoiceX == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
+                    if (int.TryParse(stringChoiceX, out intChoiceX))
+                    {
+                        if (intChoiceX >= 1 && intChoiceX <= pointsArray.GetLength(0))
+                        {
+                            intChoiceX--;
+                            break;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"                                    Not within range. Please select between 1 and {pointsArray.GetLength(0)}.");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            WriteBoard(false);
+                            Console.WriteLine();
+                            Console.Write("                                            Category: ");
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("                                  Error: Input is not valid a number. Please try again.");
+                        Console.WriteLine("                 Note: Category is selected by entering the category's corresponding number. Fx '2' for Food.");
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        Console.Clear();
+                        WriteBoard(false);
+                        Console.WriteLine();
+                        Console.Write("                                            Category: ");
+                    }
+                }
+
+                Console.Clear();
+                WriteBoard(false);
+                Console.WriteLine();
+                Console.WriteLine($"                                            Category: {categories[intChoiceX]}");
+                Console.Write("                                            Points: ");
+
+                while (quit == false)
+                {
+                    stringChoiceY = (Console.ReadLine());
+                    if (stringChoiceY == "/quit")
+                    {
+                        quit = true;
+                        break;
+                    }
+                    if (int.TryParse(stringChoiceY, out intChoiceY))
+                    {
+                        //if (intChoiceY >= 1 && intChoiceY <= (pointsArray.Length / pointsArray.GetLength(0)))
+                        if (intChoiceY == 100 || intChoiceY == 200 || intChoiceY == 300 || intChoiceY == 400 || intChoiceY == 500)
+                        {
+                            intChoiceY--;
+                            break;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("                                 Not within range. Please select 100, 200, 300, 400 or 500.");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                            Console.Clear();
+                            WriteBoard(false);
+                            Console.WriteLine();
+                            Console.WriteLine($"                                            Category: {categories[intChoiceX]}");
+                            Console.Write("                                            Points: ");
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("                                  Error: Input is not valid a number. Please try again.");
+                        Console.ResetColor();
+                        Console.ReadKey();
+                        Console.Clear();
+                        WriteBoard(false);
+                        Console.WriteLine();
+                        Console.WriteLine($"                                            Category: {categories[intChoiceX]}");
+                        Console.Write("                                            Points: ");
+                    }
+                }
+                intChoiceY /= 100;
+                if ((pointsArray[intChoiceY, intChoiceX] == 0) && (quit == false))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("                            That question is already answered! Please choose a new one.");
+                    Console.ResetColor();
+                    Console.ReadKey();
+                    Console.Clear();
+                    WriteBoard();
+                }
+                currentGuesses = 3;
+                Console.Clear();
+                if (quit == false)
+                {
+                    WriteQuestion();
+                }
+            }
+            #endregion
+
+            //Writes the selected question, displays the number of guesses left and calls ReadAnswer.
+            #region WriteQuestion
+            void WriteQuestion()
+            {
+                //Console.WriteLine(questionsArray[intChoiceY, intChoiceX]);
+                QuestionFormat(questionsArray[intChoiceY, intChoiceX], pointsArray[intChoiceY, intChoiceX]);
+                
+                Console.WriteLine();
+                if (currentGuesses != 0)
+                {
+                    Console.WriteLine($"You have {currentGuesses} guesses left.");
+                }
+                ReadAnswer();
+                
+            }
+            #endregion
+
+            //Reads the players answer and checks if it is equal to the string in the answers array.
+            //Deducts guesses on incorrect answer until none are left, and gives points to active player on correct answer.
+            //Calls WriteBoard on correct answer or when out of guesses.
+            //Sets value of current question to 0 in pointsArray, marking it as unavailable.
+            #region ReadAnswer
+            void ReadAnswer()
+            {
+                while (quit == false)
+                {
+                    if (currentGuesses != 0)
+                    {
+                        Console.Write("Answer: ");
+                        answer = Console.ReadLine().ToLower();
+                        if (answer == "/quit")
+                        {
+                            quit = true;
+                            break;
+                        }
+                        if (answer.Contains(answersArray[intChoiceY, intChoiceX].ToLower()))
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine($"Correct! The answer was {answersArray[intChoiceY, intChoiceX]}.");
+                            Console.WriteLine($"Awarded {pointsArray[intChoiceY, intChoiceX]} points to {playerNames[currentPlayer]}.");
+                            playerScores[currentPlayer] += pointsArray[intChoiceY, intChoiceX];
+                            pointsArray[intChoiceY, intChoiceX] = 0;
+                            if (currentPlayer < (playerNames.GetLength(0) - 1))
+                            {
+                                currentPlayer++;
+                            }
+                            else
+                            {
+                                currentPlayer = 0;
+                            }
+                            Console.ReadKey();
+                            Console.Clear();
+                            WriteBoard();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Wrong answer!");
+                            currentGuesses--;
+                            if (currentGuesses == 0)
+                            {
+                                pointsArray[intChoiceY, intChoiceX] = 0;
+                            }
+                            Console.ReadKey();
+                            Console.Clear();
+                            WriteQuestion();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("You have run out of guesses. Press to continue.");
+                        if (currentPlayer < (playerNames.GetLength(0) - 1))
+                        {
+                            currentPlayer++;
+                        }
+                        else
+                        {
+                            currentPlayer = 0;
+                        }
+                        Console.ReadKey();
+                        Console.Clear();
+                        WriteBoard();
+                    }
+                }
+            }
+            #endregion
+
+            #region Ascii Scroll
+            void AsciiScroll()
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("You may type '/quit' at any time during the game to return to the main menu.");
+                Console.ResetColor();
+                Console.WriteLine("   __________________________________");
+                Console.WriteLine(" / \\                                 \\.");
+                Console.WriteLine("|   |      Welcome to Jeopardy!      |.");
+                Console.WriteLine(" \\_/| Enter a classic quiz game of   |.");
+                Console.WriteLine("    | Jeopardy, answering a range of |.");
+                Console.WriteLine("    |  questions posed as answers.   |.");
+                Console.WriteLine("    |                                |.");
+                Console.WriteLine("    | How many are playing? Max 10.  |.");
+                Console.WriteLine("    |                                |.");
+
+                for (int x = 0; x < playerNames.Length; x++)
+                {
+                    if (playerNames[x] == null)
+                    {
+                        Console.Write("    | - ");
+                        Console.WriteLine("                             |.");
+                    }
+                    else
+                    {
+                        Console.Write("    | - ");
+                        Console.Write(playerNames[x]);
+                        for (int y = 0; y < 29 - playerNames[x].Length; y++)
+                        {
+                            Console.Write(" ");
+                        }
+                        Console.WriteLine("|.");
+                    }
+                }
+
+
+                Console.WriteLine("    |                                |.");
+                Console.WriteLine("    |   _____________________________|___");
+                Console.WriteLine("    |  /      Made by Silas Opstrup     /.");
+                Console.WriteLine("    \\_/________________________________/.");
+                Console.WriteLine();
+            }
+
+            #endregion
+
+            #region QuestionFormat
+            void QuestionFormat(string x, int y)
+            {
+                Console.Write(" ____");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("____ ");
+
+                Console.Write("|  __");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("__  |");
+
+                Console.Write("| |  ");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write(" ");
+                }
+                Console.WriteLine("  | |");
+
+
+                Console.WriteLine($"| |  {x}  | |");
+                Console.Write($"| |     - {y} points");
+                for (int i = 0; i < x.Length-15; i++)
+                {
+                    Console.Write(" ");
+                }
+                if (y == 0)
+                {
+                    Console.Write("  ");
+                }
+                Console.WriteLine("  | |");
+
+
+                Console.Write("| |__");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("__| |");
+
+                Console.Write("|____");
+                for (int i = 0; i < x.Length; i++)
+                {
+                    Console.Write("_");
+                }
+                Console.WriteLine("____|");
+            }
+            #endregion
+        }
+        #region Battleship
+        private static void SinkAShip(out GameState appState)
+        {
+            throw new NotImplementedException();
             throw new NotImplementedException();
         }
         #region BattleShipGame
@@ -3107,3 +3659,7 @@ namespace ClassicGameClient
         #endregion
     }
 }
+
+
+//Editing changes: Added regions outside of Jeopardy function for easier reading.
+//Editing changes: Set game-state to always be jeopardy for easier testing.
