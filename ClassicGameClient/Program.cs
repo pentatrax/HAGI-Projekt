@@ -1726,7 +1726,7 @@ namespace ClassicGameClient
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.Write("Exit program\n");
                 Console.ResetColor();
-                Console.Write("So what do you wanna do?: ");
+                Console.Write("\nSo what do you wanna do?: ");
                 if (int.TryParse(Console.ReadLine().Trim(), out int choice) && choice < 7 && choice > 0)
                 {
                     switch (choice)
