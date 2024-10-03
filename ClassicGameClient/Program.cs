@@ -676,9 +676,12 @@ namespace ClassicGameClient
                 return board;
             }
             /// <summary>
-            /// Draws the entire chess board according to the given multi byte array.
+            /// Draws the entire chess board according to the given game state variables.
             /// </summary>
             /// <param name="board">Takes the current multi byte array containing chess data.</param>
+            /// <param name="movesMade">Takes a int that gets displayed as moves made.</param>
+            /// <param name="lastMove">Take a string that gets displayed as the last move played.</param>
+            /// <param name="checkMated">Takes a boolean determining if the game is in a checkmate or not.</param>
             void DrawChessBoard(byte[,] board, int movesMade, string lastMove, bool checkMated)
             {
                 int boardDepth = board.Length / board.GetLength(0);
@@ -747,17 +750,17 @@ namespace ClassicGameClient
                             Log("Last Move: ", ConsoleColor.Blue);
                             Log(lastMove, ConsoleColor.White);
                             break;
-                        case 2:
-                            Log("   ");
-                            Log("Checkmated: ", ConsoleColor.Blue);
-                            if (checkMated)
-                            {
-                                Log("Check Mate!");
-                            } else
-                            {
-                                Log("N/A");
-                            }
-                            break;
+                        //case 2:
+                        //    Log("   ");
+                        //    Log("Checkmated: ", ConsoleColor.Blue);
+                        //    if (checkMated)
+                        //    {
+                        //        Log("Check Mate!");
+                        //    } else
+                        //    {
+                        //        Log("N/A");
+                        //    }
+                        //    break;
                     }
                     Log("\n");
                 }
