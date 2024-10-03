@@ -12,6 +12,7 @@ namespace Mastermind
         static void Main(string[] args)
         {
             byte[,] gameBoard = new byte[10, 4];
+            byte[,] feedback = new byte[10, 4];
 
             //Intro screen
             Console.WriteLine("Welcome to Mastermind, I am the Codemaster and your objective is to guess the code i will come up with." +
@@ -67,16 +68,18 @@ namespace Mastermind
 
             byte[] secretCode = new byte[4];
 
-            foreach (byte codeDigit in secretCode)
+            for (byte i = 0; i < secretCode.GetLength(0); i++)
             {
-                secretCode[codeDigit] = Convert.ToByte(rand.Next(1,7)); //generates a number that is greater or equal to 1 and less than 7
+                secretCode[i] = Convert.ToByte(rand.Next(1,7)); //generates a number that is greater or equal to 1 and less than 7
             }
             #endregion
 
             Console.WriteLine("I have come up with a code, now your job is to try to guess it!");
 
             #region Gameloop
-            for (byte turn = 1; turn <= 10; turn++)
+            byte turn;
+
+            for (turn = 1; turn <= 10; turn++)
             {
                 Console.Clear(); //Clears the board before the next round
 
@@ -87,6 +90,16 @@ namespace Mastermind
                 for (byte x = 0; x < gameBoard.GetLength(0); x++)
                 {
                     #region Displays turn number to the left of the game board
+                    //Highlight turn on the left of the screen
+                    if (x == turn - 1)
+                    {
+                        Console.Write(" > ");
+                    }
+                    else
+                    {
+                        Console.Write("   ");
+                    }
+                    
                     //Displays turn number to the left of the game board
                     if (x + 1 < 10)
                     {
@@ -100,11 +113,33 @@ namespace Mastermind
 
                     #region Display gameboard
                     //Displays gameboard as cells of 2 spaces with background color corresponding to values in gameBoard array 
-                    for (byte y = 0; y < gameBoard.GetLength(1); y++)
+                    for (byte y = 0; y < gameBoard.GetLength(1) + feedback.GetLength(1); y++)
                     {
-                        ColorSwitch(gameBoard[x, y]);
-                        Console.Write("  ");
-                        
+                        /*Console.ForegroundColor = ConsoleColor.Black;*/ //Unneccesary if i settle on spaces for pegs, useful if the pegs need to stand out
+
+                        if (y < 4)
+                        {
+                            Console.Write('|');
+
+                            ColorSwitch(gameBoard[x, y]);
+                            Console.Write("  "); //Sets width (and look) of guess "pegs"
+
+                            //Adds a space between gameboard and feedback pegs
+                            if (y == 3)
+                            {
+                                Console.BackgroundColor = ConsoleColor.Black;
+                                Console.Write("| ");
+                            }
+                        }
+                        else
+                        {
+                            Console.Write('|');
+
+                            ColorSwitch(feedback[x, y - 4]);
+                            Console.Write(" "); //Sets width (and look) of feedback "pegs"
+                        }
+
+                        //Console.ForegroundColor = ConsoleColor.White;
                         Console.BackgroundColor = ConsoleColor.Black; //"Resets" background color
                     }
                     #endregion
@@ -231,22 +266,81 @@ namespace Mastermind
                                 break;
                             }
                     }
+                    
+                    //Save guess to gameboard
+                    gameBoard[turn - 1, i] = splitGuessByte[i];
                 }
                 #endregion
 
-                //Save guess to gameboard
-                for (byte y = 0; y < gameBoard.GetLength(1); y++)
+                #region Checking guess
+                bool[] secretCodeMatched = new bool[4];
+                bool[] guessMatched = new bool[4];
+
+                int coloredPegs = 0;
+                int whitePegs = 0;
+
+                for (byte i = 0; i < gameBoard.GetLength(1); i++)
                 {
-                    gameBoard[turn - 1, y] = splitGuessByte[y];
+                    if (splitGuessByte[i] == secretCode[i])
+                    {
+                        coloredPegs++;
+                        secretCodeMatched[i] = true;
+                        guessMatched[i] = true;
+                    }
                 }
+
+                for (byte i = 0; i < gameBoard.GetLength(1); i++)
+                {
+                    if (!guessMatched[i])
+                    {
+                        for (byte j = 0; j < gameBoard.GetLength(1); j++)
+                        {
+                            if (!secretCodeMatched[j] && splitGuessByte[i] == secretCode[j])
+                            {
+                                whitePegs++;
+                                secretCodeMatched[j] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (coloredPegs > 0)
+                {
+                    for (byte i = 0; i < coloredPegs; i++)
+                    {
+                        feedback[turn - 1, i] = 7;
+                    }
+                }
+
+                else if (whitePegs > 0)
+                {
+                    for (byte i = 0; i < whitePegs; i++)
+                    {
+                        feedback[turn - 1, i + coloredPegs] = 8;
+                    }
+                }
+                #endregion
                 #endregion
             }
             #endregion
+
+            if (turn == 1)
+            {
+                Console.WriteLine("You won in 1 turn!");
+            }
+            else
+            {
+                Console.WriteLine($"You won in {turn} turns!");
+            }
+
+            Console.ReadKey();
         }
         static void ColorSwitch(byte input) //Changes background color based on byte value input
         {
             switch (input)
             {
+                //Gameboard pegs
                 case 1:
                     Console.BackgroundColor = ConsoleColor.DarkRed;
                     break;
@@ -271,6 +365,16 @@ namespace Mastermind
                     Console.BackgroundColor = ConsoleColor.Cyan;
                     break;
 
+                //Feedback pegs
+                case 7:
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    break;
+
+                case 8:
+                    Console.BackgroundColor = ConsoleColor.White;
+                    break;
+
+                //"Empty" space
                 default:
                     Console.BackgroundColor = ConsoleColor.Black;
                     break;
