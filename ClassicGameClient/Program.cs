@@ -1899,7 +1899,6 @@ namespace ClassicGameClient
                 bool isValidMove = false;
                 byte piece = (byte)(player ? chessPiece : chessPiece - 6);
                 byte[] possibleMove = new byte[2];
-                bool fieldIsEmpty = false;
                 bool opponentBlocking = false;
                 bool ownPieceBlocking = false;
                 bool possibleMoveIsMove = false;
@@ -1960,7 +1959,6 @@ namespace ClassicGameClient
                         break;
                     case ChessPieces.WhiteHorse:
                         possibleMove = new byte[2];
-                        fieldIsEmpty = false;
                         moveSet = new int[8, 2]{
                             {1,-2},
                             {2, -1},
@@ -1984,7 +1982,6 @@ namespace ClassicGameClient
                         break;
                     case ChessPieces.WhiteKing:
                         possibleMove = new byte[2];
-                        fieldIsEmpty = false;
                         moveSet = new int[8, 2]{
                             {0,-1},
                             {1,-1},
@@ -2433,7 +2430,6 @@ namespace ClassicGameClient
             string movesHistory = "";
             byte[] coordsOfRookThatReachedOtherSide = new byte[2];
             bool inGame = true;
-            bool choosingPiece = false;
             bool playerTurn = true;
             bool checkMate = false;
             string playerInput = "";
