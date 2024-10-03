@@ -2482,6 +2482,7 @@ namespace ClassicGameClient
                             {
                                 Console.Clear();
                                 DrawChessBoard(gameBoard, movesHistory.Split(',').Length - 1, movesHistory.Split(',').Last().ToUpper(), checkMate);
+                                if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
                                 Log("Congrats ", ConsoleColor.Green);
                                 if (playerTurn)
                                 {
@@ -2491,7 +2492,6 @@ namespace ClassicGameClient
                                 {
                                     Log("Black", ConsoleColor.Gray);
                                 }
-                                if (errorMsg != "") Log(errorMsg + "\n", ConsoleColor.Red);
                                 Log(", you managed to get a Pawn to the other side!\n", ConsoleColor.Green);
                                 Log("What piece do you want to change it to?\n", ConsoleColor.Yellow);
                                 Log("Choice [Queen / Bishop / Rook / Knight]: ", ConsoleColor.Yellow);
