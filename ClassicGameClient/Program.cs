@@ -1700,7 +1700,7 @@ namespace ClassicGameClient
                 Console.Write("5");
                 Console.ResetColor();
                 Console.Write(" for ");
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.Write("Credits\n");
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write("6");
@@ -1732,19 +1732,22 @@ namespace ClassicGameClient
                             return;
                         case 5:
                             Console.Clear();
-                            Console.Write("The creators of the different game are as following:\nChess made by ");
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.Write("The creators of the different game are as following:\n");
+                            Console.ResetColor();
+                            Console.Write("Chess made by: ");
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.Write("Philip Nord Nielsen\n");
                             Console.ResetColor();
-                            Console.Write("Mastermind made by ");
+                            Console.Write("Mastermind made by: ");
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.Write("Thomas Mortensen\n");
                             Console.ResetColor();
-                            Console.Write("Battleship made by ");
+                            Console.Write("Battleship made by: ");
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.Write("Lasse Handberg Gohlke\n");
                             Console.ResetColor();
-                            Console.Write("Jeopardy made by ");
+                            Console.Write("Jeopardy made by: ");
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.Write("Silas Megård Opstrup\n");
                             Console.ResetColor();
@@ -2528,6 +2531,7 @@ namespace ClassicGameClient
             int[,] enemyField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
             int[,] attackField = new int[10, 10] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }; ;
             bool gameEnd = false;
+            bool gameReady = false;
             bool playerAlive = false;
             bool enemyAlive = false;
             GenerateBSEnemyField(enemyField);
@@ -2538,7 +2542,7 @@ namespace ClassicGameClient
             Console.Write("Please enter your name?: ");
             string userName = Console.ReadLine().Trim();
             #region IntroductionLoop
-            while (true) // Start loop to set up game first time
+            while (gameReady == false) // Start loop to set up game first time
             {
                 Console.Write("Welcome ");
                 Color(userColor);
@@ -2559,7 +2563,7 @@ namespace ClassicGameClient
                         Console.ReadKey();
                         Console.Clear();
                         UserFieldGeneration(playerField);
-                        break;
+                        gameReady = true;
                     }
                     else if (answer == "COMPUTER")
                     {
@@ -2573,7 +2577,7 @@ namespace ClassicGameClient
                         ShowBSField(playerField);
                         Console.ReadKey();
                         Console.Clear();
-                        break;
+                        gameReady = true;
                     }
                     else
                     {
