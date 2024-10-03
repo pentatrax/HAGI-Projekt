@@ -2679,7 +2679,14 @@ namespace ClassicGameClient
                 //Displays turn number at the top of the screen
                 if (turn <= 10)
                 {
-                    Console.WriteLine($"Turn {turn}\n");
+                    if (gameWon == true)
+                    {
+                        Console.WriteLine("The end!\n");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Turn {turn}\n");
+                    }
                 }
                 else
                 {
@@ -2704,9 +2711,13 @@ namespace ClassicGameClient
                     {
                         Console.Write(" " + (x + 1) + ". ");
                     }
-                    else
+                    else if (x + 1 == 10)
                     {
                         Console.Write(x + 1 + ". ");
+                    }
+                    else
+                    {
+                        Console.Write("Code ");
                     }
                     #endregion
 
