@@ -2681,7 +2681,14 @@ namespace ClassicGameClient
                 //Displays turn number at the top of the screen
                 if (turn <= 10)
                 {
-                    Console.WriteLine($"Turn {turn}\n");
+                    if (gameWon == true)
+                    {
+                        Console.WriteLine("The end!\n");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Turn {turn}\n");
+                    }
                 }
                 else
                 {
