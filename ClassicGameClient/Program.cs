@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ClassicGameClient
@@ -37,7 +35,6 @@ namespace ClassicGameClient
             }
             #endregion
         }
-        #region Chess Data
         private enum GameState : byte
         {
             MainMenu = 0,
@@ -2361,7 +2358,7 @@ namespace ClassicGameClient
             {
                 void LogoPixel(string row, ConsoleColor color, ConsoleColor backColor)
                 {
-                    for (int i = 0; i<row.Length; i++)
+                    for (int i = 0; i < row.Length; i++)
                     {
                         switch (row[i])
                         {
@@ -2580,13 +2577,12 @@ namespace ClassicGameClient
         {
             throw new NotImplementedException();
         }
-        #endregion
 
         private static void Jeopardy(out GameState appState)
         {
             //Quiz arrays and variable initialisers
             #region _Variables
-            int[,] pointsArray = new int[5,5]
+            int[,] pointsArray = new int[5, 5]
             {
                 {100, 100, 100, 100, 100},
                 {200, 200, 200, 200, 200},
@@ -2595,7 +2591,7 @@ namespace ClassicGameClient
                 {500, 500, 500, 500, 500}
             };
 
-            string[,] questionsArray = new string[5,5]
+            string[,] questionsArray = new string[5, 5]
             {
                 {"The first name of Germany's dictator during World War 2.", "A flat, round Italian food that is generally served with cheese, tomato and a variety of other toppings.", "This band is popular for hits such as \"Mama Mia\" and \"Dancing Queen\".", "Tech A4", "A Chinese social media platform that is currently popular for sharing and creating short videos."},
                 {"The last name of the man who directed the Manhattan Project. He is said to be the \"father of the atomic bomb\".", "This fruit is associated with the discovery of gravity when it fell and hit Isaac Newton in the head.", "Real name Tim Bergling, this Swedish DJ goes by this artist name.", "Tech B4", "A frog muppet who is commonly shown in a variety of internet memes."},
@@ -2613,7 +2609,7 @@ namespace ClassicGameClient
                 {"Treaty of Versaille", "Belgium", "Chester Bennington", "Tech E4", "Crysis"}
             };
 
-            string[] categories = {"History", "Food", "Music", "Tech", "Memes"};
+            string[] categories = { "History", "Food", "Music", "Tech", "Memes" };
             string[] playerNames = { };
             int[] playerScores = { };
             int currentPlayer = 0;
@@ -2657,7 +2653,7 @@ namespace ClassicGameClient
             #endregion
 
 
-            
+
 
             //--------------------------------------------------FUNCTIONS--------------------------------------------------
             #region PlayerCount
@@ -2947,14 +2943,14 @@ namespace ClassicGameClient
             {
                 //Console.WriteLine(questionsArray[intChoiceY, intChoiceX]);
                 QuestionFormat(questionsArray[intChoiceY, intChoiceX], pointsArray[intChoiceY, intChoiceX]);
-                
+
                 Console.WriteLine();
                 if (currentGuesses != 0)
                 {
                     Console.WriteLine($"You have {currentGuesses} guesses left.");
                 }
                 ReadAnswer();
-                
+
             }
             #endregion
 
@@ -3100,7 +3096,7 @@ namespace ClassicGameClient
 
                 Console.WriteLine($"| |  {x}  | |");
                 Console.Write($"| |     - {y} points");
-                for (int i = 0; i < x.Length-15; i++)
+                for (int i = 0; i < x.Length - 15; i++)
                 {
                     Console.Write(" ");
                 }
@@ -3221,7 +3217,7 @@ namespace ClassicGameClient
             #endregion
             #region Random Initiativ
             int playerInitiativ = rnd.Next(1, 3); // Randomly made initiativ
-            if (playerInitiativ == 1) 
+            if (playerInitiativ == 1)
             {
                 Console.ForegroundColor = userColor;
                 Console.Write(userName);
@@ -3702,7 +3698,3 @@ namespace ClassicGameClient
         #endregion
     }
 }
-
-
-//Editing changes: Added regions outside of Jeopardy function for easier reading.
-//Editing changes: Set game-state to always be jeopardy for easier testing.
